@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
 
-from .models import Recruiter, JobSeeker, Skills, RecruiterLeadDetails, GeneratedLeadStatus
+from .models import Recruiter, JobSeeker, Skills, RecruiterLeadDetails, GeneratedLeadStatus, Industry, PrefferedJob, EducationInfo
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -53,8 +53,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class SkillsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skills
-        fields = ('title',)
+        fields = ('id','title')
 
+class IndustrySerializer(serializers.ModelSerializer):
+    title_name = serializers.CharField(source="get_title_display")
+    class Meta:
+        model = Industry
+        fields = ('id','title', 'title_name')
+
+
+class PrefferedJobSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = PrefferedJob
+        fields = ('id','title')
+
+class EducationLevelInfoSerializer(serializers.ModelSerializer):
+    education_level_name = serializers.CharField(source="get_education_level_display")
+    class Meta:
+        model = EducationInfo
+        fields = ('id','education_level', 'education_level_name', 'degree_name')
 
 class RecruiterLeadDetailsSerializer(serializers.ModelSerializer):
     class Meta:

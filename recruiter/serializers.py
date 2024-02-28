@@ -4,6 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import RecruiterDetails, Job, JobRequest
 
 class GetReacuiterProfile(serializers.ModelSerializer):
+    industry = serializers.StringRelatedField()
     class Meta:
         model = RecruiterDetails
         fields = "__all__"
@@ -35,6 +36,7 @@ class ReadJobSerializer(serializers.ModelSerializer):
     industry = serializers.StringRelatedField()
     education_info = serializers.StringRelatedField(many=True)
     required_skills = serializers.StringRelatedField(many=True)
+    job_category = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Job
@@ -57,6 +59,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         print(user.email)
         token['userId'] = user.pk
         token['email'] = user.email
+        token["isRecruiter"] = user.is_recriuter
+        token["isSeeker"] = user.is_seeker
        
 
         return token

@@ -5,8 +5,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework.pagination import  PageNumberPagination
 
 from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile
+from .customPagination import CustomPagination
 
 from backend.models import Recruiter, CustomUser
 from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly
@@ -27,7 +29,7 @@ class GetRecruiter(ListAPIView):
         return self.list(request, *args, **kwargs)
 
 class CreateRecruiterDetails(CreateAPIView):
-    permission_classes = [IsUserRecruiter]
+    # permission_classes = [IsUserRecruiter]
     serializer_class = RecruiterDetailsSerializer
 
     def perform_create(self,serializer):
@@ -58,13 +60,16 @@ class CreateJob(CreateAPIView):
 
 class ListJob(ListAPIView):
     permission_classes = [IsUserRecruiter]
-   
+    pagination_class = CustomPagination
+    
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
         queryset = Job.objects.filter(company=recruiter) 
         serializer = ReadJobSerializer(queryset, many=True)
-        return Response(serializer.data)  
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+        
 
 class RetriveUpdateJob(RetrieveUpdateAPIView):
     permission_classes = [IsRecruiterJobObjectOwnerOrReadOnly]

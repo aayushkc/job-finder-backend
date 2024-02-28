@@ -79,7 +79,7 @@ class Industry(models.Model):
 
 class Skills(models.Model):
     title = models.CharField(max_length=255)
-
+    
     def __str__(self):
         return self.title
     
@@ -102,6 +102,9 @@ class EducationInfo(models.Model):
     education_level = models.PositiveSmallIntegerField(choices = EDUCATION_LEVEL_CHOICES)
     degree_name = models.CharField(max_length = 255, blank=True)
 
+    def get_education_level_display(self):
+        return dict(self.EDUCATION_LEVEL_CHOICES).get(self.education_level, "Unknown")
+    
     def __str__(self):
         return self.degree_name
     

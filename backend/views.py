@@ -13,8 +13,14 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 import smtplib
-from .serializers import UserRegistrationSerializer, SkillsSerializer, RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer
-from .models import RecruiterLeadDetails, GeneratedLeadStatus, JobSeeker, Skills, CustomUser
+from .serializers import (UserRegistrationSerializer, SkillsSerializer, 
+                          RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer, 
+                          IndustrySerializer, PrefferedJobSerializer,
+                          EducationLevelInfoSerializer)
+from .models import (RecruiterLeadDetails, GeneratedLeadStatus, 
+                     JobSeeker, Skills, CustomUser,
+                     Industry, PrefferedJob,
+                     EducationInfo)
 from .signals import user_created
 
 User = get_user_model()
@@ -44,17 +50,33 @@ class SkillSetView(ListAPIView):
     queryset = Skills.objects.all()
     serializer_class = SkillsSerializer
 
+class IndustryView(ListAPIView):
+    queryset = Industry.objects.all()
+    serializer_class = IndustrySerializer
+
+class IndustryCreateView(CreateAPIView):
+    queryset = Skills.objects.all()
+    serializer_class = IndustrySerializer
+
+class PrefferedJobView(ListAPIView):
+    queryset = PrefferedJob.objects.all()
+    serializer_class = PrefferedJobSerializer
+
+class EducationLevelInfoView(ListAPIView):
+    queryset = EducationInfo.objects.all()
+    serializer_class = EducationLevelInfoSerializer
 
 class RecruiterLeadDetailsView(CreateAPIView):
     serializer_class = RecruiterLeadDetailsSerializer
 
     def perform_create(self, serializer):
-        print(self.request.POST['email'])
-        queryset = User.objects.filter(email=self.request.POST['email'])
+        
+        print(self.request.data['email'])
+        queryset = User.objects.filter(email=self.request.data['email'])
         if queryset.exists():
             raise ValidationError({"details":'This email already exists'})
         email_subject = 'Metting Scheduled'
-        email_message = f"Meeting has been scheduled successfully on {self.request.POST['meeting_date']} at {self.request.POST['meeting_time']}. Our team will reach out to you throgh mail or phone in the next 48 hours."
+        email_message = f"Hello, {self.request.data['name']}, the meeting has been scheduled successfully on {self.request.data['meeting_date']} at {self.request.data['meeting_time']}. Our team will reach out to you throgh mail or phone in the next 48 hours."
 
         try:
                            
@@ -65,7 +87,7 @@ class RecruiterLeadDetailsView(CreateAPIView):
                 email_subject,
                 email_message,
                 'hiregurkha@gmail.com',  # Replace with your 'from' email
-                [self.request.POST['email']],  
+                [self.request.data['email']],  
                 fail_silently=False
                 )
             print(mail_status)

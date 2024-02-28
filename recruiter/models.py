@@ -1,12 +1,13 @@
 from django.db import models
 from backend.models import Recruiter,Industry, Skills, EducationInfo, PrefferedJob, JobSeeker
+from froala_editor.fields import FroalaField
 # Create your models here.
 class RecruiterDetails(models.Model):
     user = models.OneToOneField(Recruiter, on_delete = models.CASCADE, related_name='recruiter_details')
     name = models.CharField(max_length = 255)
-    logo = models.ImageField(upload_to='logos', null=True, blank=True, default='default.jpg')
+    logo = models.ImageField(upload_to='logos', blank=True, default='default.jpg')
     location = models.CharField(max_length = 255)
-    description = models.TextField()
+    description = FroalaField()
     phone = models.PositiveIntegerField()
     company_size = models.PositiveIntegerField()
     company_email = models.EmailField()
@@ -48,7 +49,7 @@ class Job(models.Model):
     )
 
     title = models.CharField(max_length = 255)
-    description = models.TextField()
+    description = FroalaField()
     required_years_of_experience = models.PositiveSmallIntegerField(choices=WORK_EXPERIENCE_CHOICES)
     job_location = models.CharField(max_length=255, blank=True)
     salary = models.PositiveIntegerField()
