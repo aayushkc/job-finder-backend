@@ -21,6 +21,10 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         exclude = ('company',)
      
+class GetCompanyNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecruiterDetails
+        fields = ['name', 'user']
 
 class ReadJobSerializer(serializers.ModelSerializer):
     title = serializers.CharField()
@@ -34,13 +38,18 @@ class ReadJobSerializer(serializers.ModelSerializer):
     apply_before = serializers.DateField()
 
     industry = serializers.StringRelatedField()
-    education_info = serializers.StringRelatedField(many=True)
-    required_skills = serializers.StringRelatedField(many=True)
-    job_category = serializers.StringRelatedField(many=True)
+    company = serializers.SerializerMethodField('get_company_name')
+    # education_info = serializers.StringRelatedField(many=True)
+    # required_skills = serializers.StringRelatedField(many=True)
+    # job_category = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Job
-        exclude = ('company',)
+        fields = "__all__"
+        depth = 1
+    def get_company_name(self,obj):
+        return obj.company.recruiter_details.name
+    
         
     
 class CreateJobRequestSerializer(serializers.ModelSerializer):

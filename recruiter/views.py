@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import  PageNumberPagination
+from rest_framework import status
 
 from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile
 from .customPagination import CustomPagination
@@ -85,4 +85,13 @@ class DeleteJob(DestroyAPIView):
     serializer_class = JobSerializer
     permission_classes = [IsRecruiterJobObjectOwnerOrReadOnly]
     queryset = Job.objects.all()
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({
+            "message":"Job deleted successfully"
+        })
+
+    def perform_destroy(self, instance):
+        instance.delete()
  
