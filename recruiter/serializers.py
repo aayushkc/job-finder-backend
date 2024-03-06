@@ -56,9 +56,7 @@ class CreateJobRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobRequest
-        exclude = (
-            "job_seeker",
-        )
+        fields = ["job"]
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

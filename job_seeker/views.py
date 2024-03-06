@@ -1,16 +1,21 @@
 from django.shortcuts import render
 
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 
 from backend.permissions import IsUserSeeker, IsSeekerDetailsObjectorReadOnly
 from backend.models import JobSeeker
 
-from recruiter.models import JobRequest
+from recruiter.models import JobRequest, Job
 from recruiter.serializers import CreateJobRequestSerializer
+from recruiter.customPagination import CustomJobSeekerJobListPagination
 
 from .models import JobSeekerDetails
-from .serializers import JobSeekerDetailsSerializer, ReadSeekerDetailsSerializer
+from .serializers import JobSeekerDetailsSerializer, ReadSeekerDetailsSerializer, RecommendedJobSerializer
+
+from .recommendation_logic import recommend_jobs_for_seeker
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -50,4 +55,22 @@ class CreateJobRequest(CreateAPIView):
                 raise ValidationError({"details":'Job Request Already Posted!!!'})
             else:
                 serializer.save(job_seeker=user)
-                
+
+class RecommendedJobsAPIView(ListAPIView):
+    permission_classes = [IsUserSeeker]
+    pagination_class = CustomJobSeekerJobListPagination
+    def get(self, request, *args, **kwargs):
+        seeker = request.user  # Assuming the authenticated user is the job seeker
+        recommended_jobs = recommend_jobs_for_seeker(seeker)
+        job_request = JobRequest.objects.filter(job__in=recommended_jobs)
+        applied_jobs = Job.objects.filter(pk__in = job_request.values_list('job'))
+        get_job = Job.objects.exclude(pk__in = applied_jobs)
+        serializer = RecommendedJobSerializer(get_job, many=True, context ={'request':request})
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+    
+class RetriveJob(RetrieveAPIView):
+    queryset = Job.objects.all()
+    serializer_class = RecommendedJobSerializer
+    
+        
