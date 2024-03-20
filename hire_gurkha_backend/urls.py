@@ -50,7 +50,7 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    # Password Reset for Users
-    # path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.db.models import Q
+from itertools import chain
 
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.exceptions import ValidationError
@@ -12,12 +14,24 @@ from recruiter.serializers import CreateJobRequestSerializer
 from recruiter.customPagination import CustomJobSeekerJobListPagination
 
 from .models import JobSeekerDetails
-from .serializers import JobSeekerDetailsSerializer, ReadSeekerDetailsSerializer, RecommendedJobSerializer
+from .serializers import JobSeekerDetailsSerializer, ReadSeekerDetailsSerializer, RecommendedJobSerializer, ReadJobRequestSerializer
 
 from .recommendation_logic import recommend_jobs_for_seeker
 from django.http import JsonResponse
 
 # Create your views here.
+class CheckSeekDetail(ListAPIView):
+    permission_classes = [IsUserSeeker]
+    def get(self, request, *args, **kwargs):
+        user = JobSeeker.objects.get(user=request.user)
+        queryset = JobSeekerDetails.objects.filter(user=user)
+        if queryset.exists():
+            self.queryset = JobSeekerDetails.objects.filter(user=user)
+        else:
+            raise  ValidationError({"details":'Details for this Account Does Not Exits!!!'})
+        self.serializer_class = JobSeekerDetailsSerializer
+        return self.list(request, *args, **kwargs)
+
 
 class CreateJobSeekerDetails(CreateAPIView):
     permission_classes = [IsUserSeeker]
@@ -56,16 +70,29 @@ class CreateJobRequest(CreateAPIView):
             else:
                 serializer.save(job_seeker=user)
 
+class ViewJobRequest(ListAPIView):
+    permission_classes = [IsUserSeeker]
+    serializer_class = ReadJobRequestSerializer
+       
+    def get_queryset(self):
+        user = self.request.user.seeker
+        seeker = JobRequest.objects.filter(job_seeker= user)
+        return seeker
+
 class RecommendedJobsAPIView(ListAPIView):
     permission_classes = [IsUserSeeker]
     pagination_class = CustomJobSeekerJobListPagination
-    def get(self, request, *args, **kwargs):
-        seeker = request.user  # Assuming the authenticated user is the job seeker
+
+    def get_queryset(self):
+        seeker = self.request.user  # Assuming the authenticated user is the job seeker
         recommended_jobs = recommend_jobs_for_seeker(seeker)
-        job_request = JobRequest.objects.filter(job__in=recommended_jobs)
-        applied_jobs = Job.objects.filter(pk__in = job_request.values_list('job'))
-        get_job = Job.objects.exclude(pk__in = applied_jobs)
-        serializer = RecommendedJobSerializer(get_job, many=True, context ={'request':request})
+        applied_job_pks = JobRequest.objects.filter(job_seeker=seeker.seeker, job__in=recommended_jobs).values_list('job__pk', flat=True)
+        recommended_job_pks = [job.pk for job in recommended_jobs]
+        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks)
+        return queryset
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = RecommendedJobSerializer(queryset, many=True, context ={'request':request})
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
     

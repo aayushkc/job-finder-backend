@@ -1,10 +1,11 @@
 from django.urls import path
 from .views import (CreateRecruiterDetails, 
-                    CreateJob, ListJob, 
+                    CreateJob, ListAcceptedJob, 
+                    ListPendingJob,
                     RetriveUpdateJob, 
                     DeleteJob, 
                     RetriveUpdateRecruiterDetails,
-                    GetRecruiter)
+                    GetRecruiter, GetJobApplicants)
 urlpatterns = [
 
     # Profile Detils Routes
@@ -13,10 +14,12 @@ urlpatterns = [
 
     #Edit and Get the Recruiter Profile Detaisl Object
     path("view-recruiter-details/<int:pk>", RetriveUpdateRecruiterDetails.as_view(), name="view-recrutier-details"), 
-   
+    
+    path("view-recruiter-job-requests/<int:id>", GetJobApplicants.as_view(), name="view-recrutier-details-job-requests"), 
     # Jobs Routes
     path("add-job/", CreateJob.as_view(), name="add-job"),
-    path("view-jobs/", ListJob.as_view(), name="view-job"),
+    path("view-jobs/", ListAcceptedJob.as_view(), name="view-job"),
+    path("view-pending-jobs/", ListPendingJob.as_view(), name="view-pending-job"),
     path("get-job/<int:pk>", RetriveUpdateJob.as_view(), name="get-job"), #Edit and Get the Recruiter Object
     path("delete-job/<int:pk>", DeleteJob.as_view(), name="delete-job"),
 ]

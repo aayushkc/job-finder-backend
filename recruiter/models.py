@@ -57,7 +57,7 @@ class Job(models.Model):
     work_location_type = models.PositiveSmallIntegerField(choices=WORK_LOCATION_CHOICES)
     level = models.PositiveSmallIntegerField(choices=JOB_LEVEL_CHOICES)
     apply_before = models.DateField()
-
+    is_job_approved = models.BooleanField(default=False)
     company = models.ForeignKey(Recruiter, on_delete=models.CASCADE, related_name = 'job_company')
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='job_industry')
     education_info = models.ManyToManyField(EducationInfo, related_name='job_education_info')

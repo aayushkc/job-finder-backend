@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from backend.models import Recruiter
+from backend.models import Recruiter, JobSeeker
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import RecruiterDetails, Job, JobRequest
+
+
+from job_seeker.serializers import ReadSeekerDetailsSerializer
+from job_seeker.models import JobSeekerDetails
 
 class GetReacuiterProfile(serializers.ModelSerializer):
     industry = serializers.StringRelatedField()
@@ -36,7 +40,7 @@ class ReadJobSerializer(serializers.ModelSerializer):
     work_location_type = serializers.CharField(source= "get_work_location_type_display")
     level = serializers.CharField(source="get_level_display")
     apply_before = serializers.DateField()
-
+    applied = serializers.SerializerMethodField("get_applied_number")
     industry = serializers.StringRelatedField()
     company = serializers.SerializerMethodField('get_company_name')
     # education_info = serializers.StringRelatedField(many=True)
@@ -50,6 +54,9 @@ class ReadJobSerializer(serializers.ModelSerializer):
     def get_company_name(self,obj):
         return obj.company.recruiter_details.name
     
+    def get_applied_number(self,obj):
+        return obj.job_request.count()
+    
         
     
 class CreateJobRequestSerializer(serializers.ModelSerializer):
@@ -57,6 +64,23 @@ class CreateJobRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobRequest
         fields = ["job"]
+
+
+class ReadSeekerDetailsSerializer(serializers.ModelSerializer):
+    
+    seeker_details = ReadSeekerDetailsSerializer()
+    class Meta:
+        model = JobSeeker
+        exclude = ('user',)
+
+
+class ViewJobRequestSerializer(serializers.ModelSerializer):
+    job_seeker = ReadSeekerDetailsSerializer()
+    class Meta:
+        model = JobRequest
+        fields = "__all__"
+        depth = 1
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -68,6 +92,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token["isRecruiter"] = user.is_recriuter
         token["isSeeker"] = user.is_seeker
-       
+        token['isSuperAdmin'] = user.is_admin
 
         return token

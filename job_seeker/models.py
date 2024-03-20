@@ -8,7 +8,7 @@ class JobSeekerDetails(models.Model):
     middle_name = models.CharField(max_length=255, blank = True)
     last_name = models.CharField(max_length=255)
     resume = models.FileField(upload_to='resumes', blank=True)
-
+    profilePic = models.ImageField(upload_to='seekerProfilePic', blank=True, default='default.jpg')
     industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name = 'seeker_industry')
     skills = models.ManyToManyField(Skills, related_name='seeker_skills')
     prefferd_job = models.ManyToManyField(PrefferedJob, related_name='seeker_prefferd_job')

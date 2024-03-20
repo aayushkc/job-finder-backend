@@ -41,12 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sites',
   
     'rest_framework',
-    'django_rest_passwordreset',
     'backend',
     'recruiter',
     'job_seeker',
     'rest_framework_simplejwt',
-    
 ]
 
 MIDDLEWARE = [

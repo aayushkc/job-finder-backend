@@ -2,17 +2,19 @@ from django.shortcuts import render
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 
-from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile
+from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile,ViewJobRequestSerializer
 from .customPagination import CustomPagination
 
 from backend.models import Recruiter, CustomUser
-from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly
-from .models import RecruiterDetails, Job
+from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly,IsRecruiterJobRequestObjectOwnerOrReadOnly
+from .models import RecruiterDetails, Job, JobRequest
+
+
 
 
 # Create your views here.
@@ -58,14 +60,26 @@ class CreateJob(CreateAPIView):
        recruiter = Recruiter.objects.get(user=user)
        serializer.save(company=recruiter)
 
-class ListJob(ListAPIView):
+class ListAcceptedJob(ListAPIView):
     permission_classes = [IsUserRecruiter]
     pagination_class = CustomPagination
     
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
-        queryset = Job.objects.filter(company=recruiter) 
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=True) 
+        serializer = ReadJobSerializer(queryset, many=True)
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+        
+class ListPendingJob(ListAPIView):
+    permission_classes = [IsUserRecruiter]
+    pagination_class = CustomPagination
+    
+    def list(self, request):
+        user = request.user
+        recruiter = Recruiter.objects.get(user=user)
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=False) 
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
@@ -95,3 +109,17 @@ class DeleteJob(DestroyAPIView):
     def perform_destroy(self, instance):
         instance.delete()
  
+
+class GetJobApplicants(ListAPIView):
+    permission_classes = [IsUserRecruiter]
+    pagination_class = CustomPagination
+
+    def get(self, request,id):
+        recruiter = Recruiter.objects.get(user=request.user)
+        queryset = Job.objects.filter(id=id, company=recruiter)
+        jobReq = JobRequest.objects.filter(job__in = queryset)
+        serializer = ViewJobRequestSerializer(jobReq, many=True)
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+
+    

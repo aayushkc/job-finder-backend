@@ -11,7 +11,7 @@ def recommend_jobs_for_seeker(seeker):
 
     # Filter jobs based on seeker's industry and preferred job categories
     jobs_queryset = Job.objects.filter(
-        Q(industry=seeker_industry) | Q(job_category__in=seeker_preferred_jobs)
+        Q(industry=seeker_industry) | Q(job_category__in=seeker_preferred_jobs),is_job_approved=True
     ).distinct()
 
     job_features = []
@@ -49,11 +49,3 @@ def recommend_jobs_for_seeker(seeker):
     recommended_jobs = [jobs_queryset[index] for index in flat_recommended_jobs_indices]
     return recommended_jobs
 
-def get_similar_jobs_indices(similarity_matrix, jobs_queryset):
-    # Find indices of top-N most similar jobs
-    # You may want to filter out jobs that the seeker has already seen or applied for
-    # For simplicity, let's recommend top 10 similar jobs
-    top_n = 10
-    similar_jobs_indices = similarity_matrix.argsort()[:, ::-1][:, 1:top_n+1]  # Exclude the job itself
-
-    return similar_jobs_indices

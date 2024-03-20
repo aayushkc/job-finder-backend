@@ -25,3 +25,8 @@ class IsRecruiterJobObjectOwnerOrReadOnly(IsUserRecruiter,BasePermission):
         print(obj.company.user)
         print(request.user.recruiter)
         return request.user.is_recriuter and obj.company.user == request.user
+    
+class IsRecruiterJobRequestObjectOwnerOrReadOnly(IsUserRecruiter,BasePermission):
+    def has_object_permission(self, request, view, obj):
+        print(request.user.recruiter)
+        return request.user.is_recriuter and obj.job.company.user == request.user
