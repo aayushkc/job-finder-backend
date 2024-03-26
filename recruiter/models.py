@@ -8,7 +8,7 @@ class RecruiterDetails(models.Model):
     logo = models.ImageField(upload_to='logos', blank=True, default='default.jpg')
     location = models.CharField(max_length = 255)
     description = FroalaField()
-    phone = models.PositiveIntegerField()
+    phone = models.PositiveBigIntegerField()
     company_size = models.PositiveIntegerField()
     company_email = models.EmailField()
     company_url = models.URLField()
@@ -62,7 +62,7 @@ class Job(models.Model):
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='job_industry')
     education_info = models.ManyToManyField(EducationInfo, related_name='job_education_info')
     required_skills = models.ManyToManyField(Skills, related_name="jobs_skills")
-    job_category = models.ManyToManyField(PrefferedJob, related_name="preffered_job", blank=True)
+    job_category = models.ManyToManyField(PrefferedJob, related_name="preffered_job")
 
     def __str__(self):
         return  "--" + self.title

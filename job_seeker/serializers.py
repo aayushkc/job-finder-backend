@@ -6,18 +6,9 @@ from recruiter.models import Job, JobRequest
 from backend.models import JobSeeker
 from django.contrib.sites.shortcuts import get_current_site
 class JobSeekerDetailsSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField()
-    middle_name = serializers.CharField()
-    last_name = serializers.CharField()
-    dob = serializers.DateField()
-    resume = serializers.FileField()
-    
-    industry = serializers.StringRelatedField()
-  
-
+   
     class Meta:
         model = JobSeekerDetails
-        depth = 1
         exclude = ('user',)
 
 
@@ -28,12 +19,13 @@ class ReadSeekerDetailsSerializer(serializers.ModelSerializer):
     dob = serializers.DateField()
     resume = serializers.SerializerMethodField("get_resume")
     profilePic = serializers.SerializerMethodField("get_profilePic")
-    industry = serializers.StringRelatedField()
-    skills = serializers.StringRelatedField(many=True)
-    prefferd_job = serializers.StringRelatedField(many=True)
+    # industry = serializers.StringRelatedField()
+    # skills = serializers.StringRelatedField(many=True)
+    # prefferd_job = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = JobSeekerDetails
+        depth = 1
         exclude = ('user',)
 
     def get_profilePic(self,obj):

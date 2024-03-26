@@ -10,7 +10,7 @@ from backend.permissions import IsUserSeeker, IsSeekerDetailsObjectorReadOnly
 from backend.models import JobSeeker
 
 from recruiter.models import JobRequest, Job
-from recruiter.serializers import CreateJobRequestSerializer
+from recruiter.serializers import CreateJobRequestSerializer, ReadJobSerializer
 from recruiter.customPagination import CustomJobSeekerJobListPagination
 
 from .models import JobSeekerDetails
@@ -29,7 +29,7 @@ class CheckSeekDetail(ListAPIView):
             self.queryset = JobSeekerDetails.objects.filter(user=user)
         else:
             raise  ValidationError({"details":'Details for this Account Does Not Exits!!!'})
-        self.serializer_class = JobSeekerDetailsSerializer
+        self.serializer_class = ReadSeekerDetailsSerializer
         return self.list(request, *args, **kwargs)
 
 
@@ -50,9 +50,9 @@ class ViewUpdateUserDetails(RetrieveUpdateAPIView):
     permission_classes = [IsSeekerDetailsObjectorReadOnly]
     queryset = JobSeekerDetails.objects.all()
 
-
     def get_serializer_class(self):
-        if self.request.method == "PUT":
+        if self.request.method == "PUT" or self.request.method == "PATCH" :
+            print("ENterrereree Write Jobbbbbbbb")
             return JobSeekerDetailsSerializer
         return ReadSeekerDetailsSerializer
     
@@ -98,6 +98,21 @@ class RecommendedJobsAPIView(ListAPIView):
     
 class RetriveJob(RetrieveAPIView):
     queryset = Job.objects.all()
-    serializer_class = RecommendedJobSerializer
-    
+
+    def get_serializer_class(self):
+        if self.request.user.is_anonymous:
+            return ReadJobSerializer
+        else:
+            return RecommendedJobSerializer
         
+class ListAllJobs(ListAPIView):
+    pagination_class = CustomJobSeekerJobListPagination
+
+    def get_queryset(self):
+        return Job.objects.all()
+    
+    def list(self,request):
+        queryset = self.get_queryset()
+        serializer = ReadJobSerializer(queryset, many=True)
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)

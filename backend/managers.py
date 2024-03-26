@@ -29,6 +29,7 @@ class MyUserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
+            username=email
         )
         user.is_admin = True
         user.save(using=self._db)

@@ -7,6 +7,10 @@ from .models import RecruiterDetails, Job, JobRequest
 from job_seeker.serializers import ReadSeekerDetailsSerializer
 from job_seeker.models import JobSeekerDetails
 
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import request
+
+
 class GetReacuiterProfile(serializers.ModelSerializer):
     industry = serializers.StringRelatedField()
     class Meta:
@@ -43,6 +47,8 @@ class ReadJobSerializer(serializers.ModelSerializer):
     applied = serializers.SerializerMethodField("get_applied_number")
     industry = serializers.StringRelatedField()
     company = serializers.SerializerMethodField('get_company_name')
+    company_description = serializers.SerializerMethodField('get_company_description')
+    logo = serializers.SerializerMethodField("get_company_logo")
     # education_info = serializers.StringRelatedField(many=True)
     # required_skills = serializers.StringRelatedField(many=True)
     # job_category = serializers.StringRelatedField(many=True)
@@ -52,10 +58,17 @@ class ReadJobSerializer(serializers.ModelSerializer):
         fields = "__all__"
         depth = 1
     def get_company_name(self,obj):
+        print(obj.company)
         return obj.company.recruiter_details.name
     
     def get_applied_number(self,obj):
         return obj.job_request.count()
+
+    def get_company_description(self,obj):
+        return obj.company.recruiter_details.description
+    
+    def get_company_logo(self,obj):
+        return f'http://{get_current_site(request).domain}/media/{obj.company.recruiter_details.logo}'
     
         
     

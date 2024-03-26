@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-  
+     'corsheaders',
     'rest_framework',
     'backend',
     'recruiter',
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL  = True
 
 ROOT_URLCONF = 'hire_gurkha_backend.urls'
 
@@ -86,10 +86,15 @@ WSGI_APPLICATION = 'hire_gurkha_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+ 'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hire_gurkha_db', # database name
+        'HOST':'localhost', # database servername
+        'USER':'root', 
+        'PASSWORD':'',
+        'PORT':'3306',
     }
+    
 }
 DOMAIN_NAME = '127.0.0.1:8000'
 REST_FRAMEWORK = {
@@ -163,5 +168,5 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SITE_ID = 2
+SITE_ID = 5
 

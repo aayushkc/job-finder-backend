@@ -76,7 +76,7 @@ class RecruiterLeadDetailsView(CreateAPIView):
         if queryset.exists():
             raise ValidationError({"details":'This email already exists'})
         email_subject = 'Metting Scheduled'
-        email_message = f"Hello, {self.request.data['name']}, the meeting has been scheduled successfully on {self.request.data['meeting_date']} at {self.request.data['meeting_time']}. Our team will reach out to you throgh mail or phone in the next 48 hours."
+        email_message = f"Hello, {self.request.data['name']}, the meeting has been scheduled successfully on {self.request.data['meeting_date']} at {self.request.data['meeting_time']}. Our team will reach out to you through mail or phone in the next 48 hours."
 
         try:
                            

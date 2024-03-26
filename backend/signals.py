@@ -50,7 +50,7 @@ def user_created(sender, instance, **kwargs):
 
                     # Get the current site
                     #The code below should be used in production 
-                    #current_site = Site.objects.get_current() 
+                    current_site = Site.objects.get_current() 
 
                     # Construct the reset password link with the actual domain
                     #reset_password_link = f"https://{current_site.domain}{reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})}"
@@ -60,7 +60,7 @@ def user_created(sender, instance, **kwargs):
                     reset_password_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
 
                     # Construct the absolute URL using the domain
-                    absolute_reset_password_link = f'http://127.0.0.1:8000{reset_password_link}'
+                    absolute_reset_password_link = f'https://{current_site.domain}{reset_password_link}'
 
                     # Construct the email message
                     email_subject = 'Reset Your Password'
