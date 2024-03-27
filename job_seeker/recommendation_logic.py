@@ -14,6 +14,9 @@ def recommend_jobs_for_seeker(seeker):
         Q(industry=seeker_industry) | Q(job_category__in=seeker_preferred_jobs),is_job_approved=True
     ).distinct()
 
+    if not jobs_queryset:
+        return []
+
     job_features = []
     for job in jobs_queryset:
         skills_text = ', '.join(job.required_skills.values_list('title', flat=True))

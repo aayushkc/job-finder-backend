@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'backend',
     'recruiter',
     'job_seeker',
+    'django_rest_passwordreset',
     'rest_framework_simplejwt',
 ]
 

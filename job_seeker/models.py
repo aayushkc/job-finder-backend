@@ -12,7 +12,8 @@ class JobSeekerDetails(models.Model):
     industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name = 'seeker_industry')
     skills = models.ManyToManyField(Skills, related_name='seeker_skills')
     prefferd_job = models.ManyToManyField(PrefferedJob, related_name='seeker_prefferd_job')
-
+    location = models.CharField(max_length = 255, blank=True)
+    phone = models.PositiveBigIntegerField(blank= True)
 
     def __str__(self):
         return self.first_name
