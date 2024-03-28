@@ -55,11 +55,7 @@ def user_created(sender, instance, **kwargs):
                     #The code below should be used in production 
                     current_site = Site.objects.get_current() 
 
-                    # Construct the reset password link with the actual domain
-                    #reset_password_link = f"https://{current_site.domain}{reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})}"
-
                     
-                    #For developement
                     reset_password_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
 
                     # Construct the absolute URL using the domain
