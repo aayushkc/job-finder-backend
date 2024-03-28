@@ -97,7 +97,7 @@ DATABASES = {
     }
     
 }
-DOMAIN_NAME = '127.0.0.1:8000'
+DOMAIN_NAME = 'api.hiregurkha.com'
 REST_FRAMEWORK = {
    
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -169,5 +169,5 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SITE_ID = 5
+SITE_ID = 1
 
