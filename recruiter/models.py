@@ -9,7 +9,8 @@ class RecruiterDetails(models.Model):
     location = models.CharField(max_length = 255)
     description = FroalaField()
     phone = models.PositiveBigIntegerField()
-    company_size = models.PositiveIntegerField()
+    company_min_size =  models.PositiveSmallIntegerField(default=1)
+    company_max_size = models.PositiveSmallIntegerField(default=10)
     company_email = models.EmailField()
     company_url = models.URLField()
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='recruiter_industry')
@@ -23,6 +24,10 @@ class Job(models.Model):
     LESS_THAN_THREE = 1
     BETWEEN_THREE_AND_SIX = 2
     MORE_THAN_SIX = 3
+    ZERO_TO_SIX_MONTHS = 4
+    SIX_MONTHS_TO_ONE_YEAR = 5
+    ONE_YEAR_TO_TWO_YEAR = 6
+    TWO_YEAR_TO_THREE_YEAR = 7
     WORK_EXPERIENCE_CHOICES = (
         (NOT_IMPORTANT, 'not important'),
         (LESS_THAN_THREE, 'less than three'),
@@ -52,7 +57,9 @@ class Job(models.Model):
     description = FroalaField()
     required_years_of_experience = models.PositiveSmallIntegerField(choices=WORK_EXPERIENCE_CHOICES)
     job_location = models.CharField(max_length=255, blank=True)
-    salary = models.PositiveIntegerField()
+    salary = models.PositiveBigIntegerField(blank=True, null=True)
+    min_salary = models.PositiveBigIntegerField(blank=True, null=True)
+    max_salary = models.PositiveBigIntegerField(blank=True, null=True)
     number_of_vacancy = models.PositiveSmallIntegerField()
     work_location_type = models.PositiveSmallIntegerField(choices=WORK_LOCATION_CHOICES)
     level = models.PositiveSmallIntegerField(choices=JOB_LEVEL_CHOICES)

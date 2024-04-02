@@ -12,18 +12,22 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+import environ
+env = environ.Env(
+    DEBUG=(bool, False),
+)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2vnw*3!9g%zzo2sd-)3-9hqp5*6%lg48!oisnk%)_jlo&aabkw'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -87,16 +91,17 @@ WSGI_APPLICATION = 'hire_gurkha_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
- 'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hire_gurkha_db', # database name
-        'HOST':'localhost', # database servername
-        'USER':'root', 
-        'PASSWORD':'',
-        'PORT':'3306',
+    'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'hire_gurkha_db', # database name
+            'HOST':'localhost', # database servername
+            'USER':os.environ.get("DB_USER"), 
+            'PASSWORD':os.environ.get("DB_PASSWORD"),
+            'PORT':'3306',
+        }
+        
     }
-    
-}
+
 DOMAIN_NAME = 'api.hiregurkha.com'
 REST_FRAMEWORK = {
    
@@ -149,18 +154,20 @@ USE_TZ = True
 
 
 #Email Confguration
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'summerboyaayush@gmail.com'
-EMAIL_HOST_PASSWORD = 'iath uoxb jigo fqxc'
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 

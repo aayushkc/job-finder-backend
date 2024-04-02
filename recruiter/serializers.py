@@ -35,15 +35,14 @@ class GetCompanyNameSerializer(serializers.ModelSerializer):
         fields = ['name', 'user']
 
 class ReadJobSerializer(serializers.ModelSerializer):
-    title = serializers.CharField()
+   
     description = serializers.CharField()
     required_years_of_experience = serializers.CharField(source="get_required_years_of_experience_display")
-    job_location = serializers.CharField()
-    salary = serializers.IntegerField()
+   
     number_of_vacancy = serializers.IntegerField()
     work_location_type = serializers.CharField(source= "get_work_location_type_display")
     level = serializers.CharField(source="get_level_display")
-    apply_before = serializers.DateField()
+    
     applied = serializers.SerializerMethodField("get_applied_number")
     industry = serializers.StringRelatedField()
     company = serializers.SerializerMethodField('get_company_name')
@@ -68,7 +67,7 @@ class ReadJobSerializer(serializers.ModelSerializer):
         return obj.company.recruiter_details.description
     
     def get_company_logo(self,obj):
-        return f'http://{get_current_site(request).domain}/media/{obj.company.recruiter_details.logo}'
+        return f'https://www.media.hiregurkha.com/{obj.company.recruiter_details.logo}'
     
         
     
