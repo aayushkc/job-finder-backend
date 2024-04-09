@@ -1,18 +1,39 @@
 from django.db import models
 from backend.models import Recruiter,Industry, Skills, EducationInfo, PrefferedJob, JobSeeker
 from froala_editor.fields import FroalaField
+from django_resized import ResizedImageField
+
 # Create your models here.
 class RecruiterDetails(models.Model):
+    ONE_TO_TEN = 0
+    LESS_THAN_TEN = 1
+    FIFTY_ONE_TO_TWO_HUNDRED = 2
+    TWOHUNDRED_ONE_TO_FIVE_HUNDRED  = 3
+    FIVEHUNDRED_ONE_TO_THOUSAND = 4
+    ONETHOUSAND_ONE_TO_FIVE_THOUSAND = 5
+    FIVETHOUSAND_ONE_TO_TEN_THOUSAND = 6
+    MORE_THAN_TEN_THOUSAND_ONE = 7
+    COMPANY_SIZES_CHOICES = (
+        (ONE_TO_TEN, '1-10'),
+        (LESS_THAN_TEN, '11-50'),
+        (FIFTY_ONE_TO_TWO_HUNDRED, '51-200'),
+        (TWOHUNDRED_ONE_TO_FIVE_HUNDRED, '201-500'),
+        (FIVEHUNDRED_ONE_TO_THOUSAND, '501-1000'),
+        (ONETHOUSAND_ONE_TO_FIVE_THOUSAND, '1001-5000'),
+        (FIVETHOUSAND_ONE_TO_TEN_THOUSAND, '5001-10000'),
+        (MORE_THAN_TEN_THOUSAND_ONE, '10001+')
+    )
     user = models.OneToOneField(Recruiter, on_delete = models.CASCADE, related_name='recruiter_details')
     name = models.CharField(max_length = 255)
-    logo = models.ImageField(upload_to='logos', blank=True, default='default.jpg')
+    logo = ResizedImageField(size=[105, 80],upload_to='logos', blank=True, default='default.jpg')
     location = models.CharField(max_length = 255)
     description = FroalaField()
     phone = models.PositiveBigIntegerField()
+    company_size = models.PositiveSmallIntegerField(choices=COMPANY_SIZES_CHOICES)
     company_min_size =  models.PositiveSmallIntegerField(default=1)
     company_max_size = models.PositiveSmallIntegerField(default=10)
     company_email = models.EmailField()
-    company_url = models.URLField()
+    company_url = models.URLField(null=True, blank=True)
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='recruiter_industry')
     
 
@@ -20,7 +41,7 @@ class RecruiterDetails(models.Model):
         return self.name
 
 class Job(models.Model):
-    NOT_IMPORTANT = 0
+    ZERO_TO_ONE = 0
     LESS_THAN_THREE = 1
     BETWEEN_THREE_AND_SIX = 2
     MORE_THAN_SIX = 3
@@ -29,8 +50,8 @@ class Job(models.Model):
     ONE_YEAR_TO_TWO_YEAR = 6
     TWO_YEAR_TO_THREE_YEAR = 7
     WORK_EXPERIENCE_CHOICES = (
-        (NOT_IMPORTANT, 'not important'),
-        (LESS_THAN_THREE, 'less than three'),
+        (ZERO_TO_ONE, '0-1'),
+        (LESS_THAN_THREE, '1-3'),
         (BETWEEN_THREE_AND_SIX, 'between three and six'),
         (MORE_THAN_SIX, 'more than six')
     )

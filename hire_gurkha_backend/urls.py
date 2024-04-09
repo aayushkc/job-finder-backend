@@ -51,6 +51,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
      path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+     path("__debug__/", include("debug_toolbar.urls")),
 
     
 

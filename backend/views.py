@@ -88,9 +88,20 @@ class RecruiterLeadDetailsView(CreateAPIView):
                 email_message,
                 'hiregurkha@gmail.com',  # Replace with your 'from' email
                 [self.request.data['email']],  
-                fail_silently=False
+                fail_silently=True
                 )
             print(mail_status)
+            # msg = EmailMultiAlternatives(
+            #                 # title:
+            #                 email_subject,
+            #                 # message:
+            #                 email_message,
+            #                 # from:
+            #                 "noreply@hiregurkha.com",
+            #                 # to:
+            #                  [self.request.data['email']]
+            #                 )
+            # msg.send()
             serializer.save()
         except Exception as e:
             raise Http404

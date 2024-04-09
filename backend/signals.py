@@ -30,6 +30,7 @@ from rest_framework import status
 
 User = get_user_model()
 class EmailSendingError(Exception):
+    print("Count not send email")
     pass
 @receiver(pre_save, sender=GeneratedLeadStatus)
 def user_created(sender, instance, **kwargs):
@@ -71,10 +72,22 @@ def user_created(sender, instance, **kwargs):
                             send_mail(
                                 email_subject,
                                 email_message,
-                                'hiregurkha@gmail.com',  # Replace with your 'from' email
+                                'hiregurkha@hiregurkha.com',  # Replace with your 'from' email
                                 [user.email],  
                                 fail_silently=False
                             )
+
+                            # msg = EmailMultiAlternatives(
+                            # # title:
+                            # "Password Reset for {title}".format(title="Hire Gurkha"),
+                            # # message:
+                            # email_message,
+                            # # from:
+                            # "noreply@hiregurkha.com",
+                            # # to:
+                            #  [user.email]
+                            # )
+                            # msg.send()
 
                             return True  # Indicate successful email sending
                     except:
