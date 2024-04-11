@@ -105,15 +105,18 @@ class JobRequest(models.Model):
 
     WAITING = 0
     DENIED = 1
+    SHORTLIST = 2
     STATUS_CHOICES = (
-        (WAITING, 'waiting'),
-        (DENIED, 'denied')
+        (WAITING, 'Waiting'),
+        (DENIED, 'Denied'),
+        (SHORTLIST, 'Shortlist')
     )
     job = models.ForeignKey(Job, on_delete = models.PROTECT, related_name= 'job_request')
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.PROTECT, related_name = 'job_seeker_request')
 
     seen_status = models.PositiveSmallIntegerField(choices=SEEN_STATUS_CHOICES, default=NOT_SEEN)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=WAITING)
+    applied_on = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.job_seeker} - {self.job}"

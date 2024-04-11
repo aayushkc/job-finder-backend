@@ -2,20 +2,20 @@ from django.shortcuts import render
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 
-from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile,ViewJobRequestSerializer
+from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile,ViewJobRequestSerializer, CreateJobRequestSerializer
 from .customPagination import CustomPagination
 
 from backend.models import Recruiter, CustomUser
 from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly,IsRecruiterJobRequestObjectOwnerOrReadOnly
 from .models import RecruiterDetails, Job, JobRequest
 
-
-
+from job_seeker.models import JobSeekerDetails
+from job_seeker.serializers import ReadSeekerDetailsSerializer
 
 # Create your views here.
 class GetRecruiter(ListAPIView):
@@ -122,4 +122,12 @@ class GetJobApplicants(ListAPIView):
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
 
+class ViewSeekerDetails(RetrieveAPIView):
+    permission_classes = [IsUserRecruiter]
+    queryset = JobSeekerDetails.objects.all()
+    serializer_class= ReadSeekerDetailsSerializer
     
+class UpdateJobRequest(UpdateAPIView):
+    permission_classes = [IsUserRecruiter]
+    queryset = JobRequest.objects.all()
+    serializer_class = CreateJobRequestSerializer
