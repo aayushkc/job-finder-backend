@@ -78,6 +78,7 @@ class Industry(models.Model):
         return self.get_title_display()
 
 class Skills(models.Model):
+    industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='related_name')
     title = models.CharField(max_length=255)
     
     def __str__(self):

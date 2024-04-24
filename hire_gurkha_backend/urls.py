@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from backend.views import SkillSetView, SkillSetCreateView, RecruiterLeadDetailsView
+from backend.views import SkillSetView, SkillSetCreateView, RecruiterLeadDetailsView,SkillSetWithIndustryView
 from django.contrib.auth.views import (  
     PasswordResetConfirmView,
     PasswordResetCompleteView
@@ -45,6 +45,7 @@ urlpatterns = [
     # Add and Get Skills Models routes 
     path('skills/', view=SkillSetView.as_view(), name='skills-get'),
     path('create-skills/', view=SkillSetCreateView.as_view(), name='skills-create'),
+    path('get-skills/', view=SkillSetWithIndustryView.as_view(), name='skills-with-industry'),
 
     # JWT Login routes
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

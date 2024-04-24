@@ -7,7 +7,7 @@ from django.core import mail
 from django.core.mail import send_mail
 
 
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.exceptions import NotAcceptable, ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -50,12 +50,24 @@ class SkillSetView(ListAPIView):
     queryset = Skills.objects.all()
     serializer_class = SkillsSerializer
 
+
+class SkillSetWithIndustryView(ListAPIView):
+    serializer_class = SkillsSerializer
+    def get_queryset(self):
+        industry =  self.request.GET.get('industry')
+        if industry == 'null':
+            queryset = Skills.objects.all()
+        else:
+            queryset = Skills.objects.filter(industry =industry )
+        return queryset
+    
+
 class IndustryView(ListAPIView):
     queryset = Industry.objects.all()
     serializer_class = IndustrySerializer
 
 class IndustryCreateView(CreateAPIView):
-    queryset = Skills.objects.all()
+    queryset = Industry.objects.all()
     serializer_class = IndustrySerializer
 
 class PrefferedJobView(ListAPIView):

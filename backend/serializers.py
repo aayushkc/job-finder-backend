@@ -53,7 +53,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class SkillsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skills
-        fields = ('id','title')
+        fields = '__all__'
 
 class IndustrySerializer(serializers.ModelSerializer):
     title_name = serializers.CharField(source="get_title_display")
