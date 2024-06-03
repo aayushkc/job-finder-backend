@@ -18,7 +18,7 @@ env = environ.Env(
 )
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -35,7 +35,26 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    
+    'backend',
+    'recruiter',
+    'job_seeker',
+    'blog',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail_modeladmin',
+    'wagtail',
+     'wagtail.api.v2',
+    'modelcluster',
+    'taggit',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,9 +65,6 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'corsheaders',
     'rest_framework',
-    'backend',
-    'recruiter',
-    'job_seeker',
     'django_rest_passwordreset',
     'rest_framework_simplejwt',
 ]
@@ -63,6 +79,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 INTERNAL_IPS = [
     
@@ -72,6 +90,10 @@ INTERNAL_IPS = [
 CORS_ORIGIN_ALLOW_ALL  = True
 
 ROOT_URLCONF = 'hire_gurkha_backend.urls'
+
+WAGTAIL_SITE_NAME = 'Hire Gurkha'
+
+WAGTAILADMIN_BASE_URL = 'http://127.0.0.1:8000'
 
 TEMPLATES = [
     {
@@ -173,11 +195,43 @@ EMAIL_USE_TLS = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+# STATICFILES_DIRS = [
+#     os.path.join(PROJECT_DIR, "static"),
+# ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+
 
 STATIC_URL = 'static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    # ManifestStaticFilesStorage is recommended in production, to prevent
+    # outdated JavaScript / CSS assets being served from cache
+    # (e.g. after a Wagtail upgrade).
+    # See https://docs.djangoproject.com/en/5.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
+
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",
+    }
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

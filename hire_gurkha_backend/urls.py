@@ -29,15 +29,23 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView
 )
 
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail import urls as wagtail_urls
+from wagtail.documents import urls as wagtaildocs_urls
 
+from .api import api_router
 urlpatterns = [
 
     path('admin/', admin.site.urls),
+
     path('', include('backend.urls')),
     path('recruiter/', include('recruiter.urls')),
     path('job-seeker/', include('job_seeker.urls')),
-
-   
+    
+    path('cms/', include(wagtailadmin_urls)),
+    path('documents/', include(wagtaildocs_urls)),
+    path('pages/', include(wagtail_urls)),
+    path('api/v2/', api_router.urls),
    # Password Reset Links for the newly created recruiter Accounts
     path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html'),name='password_reset_confirm'),
     path('password-reset-complete/',PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),name='password_reset_complete'),
