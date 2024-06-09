@@ -16,13 +16,13 @@ import smtplib
 from .serializers import (UserRegistrationSerializer, SkillsSerializer, 
                           RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer, 
                           IndustrySerializer, PrefferedJobSerializer,
-                          EducationLevelInfoSerializer)
+                          EducationLevelInfoSerializer,PageMetaSerializer)
 from .models import (RecruiterLeadDetails, GeneratedLeadStatus, 
                      JobSeeker, Skills, CustomUser,
                      Industry, PrefferedJob,
-                     EducationInfo)
+                     EducationInfo,PageMeta)
 from .signals import user_created
-
+from .permissions import IsUserRecruiter
 User = get_user_model()
 user_created = Signal()
 # Create your views here.
@@ -143,3 +143,20 @@ class ChangeGenertedLeadStatusView(UpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
        
 
+class PageMetaView(ListAPIView):
+    serializer_class = PageMetaSerializer
+
+    def get_queryset(self):
+        pageName = self.request.GET.get('pageName')
+        queryset = PageMeta.objects.filter(pageName=pageName)
+        return queryset
+    
+class PageMetaUpdateView(UpdateAPIView):
+    permission_classes = [IsUserRecruiter]
+    serializer_class = PageMetaSerializer
+    queryset = PageMeta.objects.all()
+    
+class PageMetaCreateView(CreateAPIView):
+    permission_classes = [IsUserRecruiter]
+    queryset = PageMeta.objects.all()
+    serializer_class = PageMetaSerializer

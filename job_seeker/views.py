@@ -107,9 +107,15 @@ class RetriveJob(RetrieveAPIView):
         
 class ListAllJobs(ListAPIView):
     pagination_class = CustomJobSeekerJobListPagination
-
     def get_queryset(self):
-        return Job.objects.all()
+        query_param_industry = self.request.GET.get('industry')
+        query_param_skills = self.request.GET.get('skills')
+        if query_param_industry and query_param_industry !='null':
+            return Job.objects.filter(industry=query_param_industry)
+        elif query_param_skills and query_param_skills !='null':
+            return Job.objects.filter( required_skills = query_param_skills)
+        else:
+            return Job.objects.all()
     
     def list(self,request):
         queryset = self.get_queryset()

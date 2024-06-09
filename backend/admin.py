@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (CustomUser, Recruiter, JobSeeker,
                      Industry,Skills, EducationInfo, 
-                     PrefferedJob, RecruiterLeadDetails, GeneratedLeadStatus)
+                     PrefferedJob, RecruiterLeadDetails, GeneratedLeadStatus,PageMeta)
 from recruiter.models import RecruiterDetails, Job, JobRequest
 
 from django import forms
@@ -105,4 +105,4 @@ admin.site.register(PrefferedJob)
 admin.site.register(JobRequest)
 admin.site.register(RecruiterLeadDetails)
 admin.site.register(GeneratedLeadStatus)
-
+admin.site.register(PageMeta)

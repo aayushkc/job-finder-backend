@@ -6,7 +6,8 @@ from .views import (RegisterUser, RecruiterLeadDetailsView,
                     IndustryView,
                     IndustryCreateView,
                     PrefferedJobView,
-                    EducationLevelInfoView)
+                    EducationLevelInfoView,
+                    PageMetaCreateView,PageMetaUpdateView,PageMetaView)
 
 
 
@@ -23,4 +24,8 @@ urlpatterns = [
 
     path('job-preference/', view=PrefferedJobView.as_view(), name='get-job-preference'),
     path('education-level/', view=EducationLevelInfoView.as_view(), name='get-education-level'),
+
+    path("page-meta-view", PageMetaView.as_view(), name="pagemeta-view"),
+    path("page-meta-create", PageMetaCreateView.as_view(), name="pagemeta-create"),
+    path("page-meta-update/<int:pk>", PageMetaUpdateView.as_view(), name="pagemeta-update"),
 ] 

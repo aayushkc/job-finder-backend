@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
 
-from .models import Recruiter, JobSeeker, Skills, RecruiterLeadDetails, GeneratedLeadStatus, Industry, PrefferedJob, EducationInfo
+from .models import Recruiter, JobSeeker, Skills, RecruiterLeadDetails, GeneratedLeadStatus, Industry, PrefferedJob, EducationInfo,PageMeta
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -66,7 +66,7 @@ class PrefferedJobSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = PrefferedJob
-        fields = ('id','title')
+        fields = ('id','title','icon')
 
 class EducationLevelInfoSerializer(serializers.ModelSerializer):
     education_level_name = serializers.CharField(source="get_education_level_display")
@@ -97,3 +97,7 @@ class GeneratedLeadStatusSerializer(serializers.ModelSerializer):
         
 
 
+class PageMetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageMeta
+        fields = "__all__"

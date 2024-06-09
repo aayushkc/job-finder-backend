@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
 from .managers import MyUserManager
-
+from django_resized import ResizedImageField
 
 # Create your models here.
 class CustomUser(AbstractBaseUser,PermissionsMixin):
@@ -80,7 +80,7 @@ class Industry(models.Model):
 class Skills(models.Model):
     industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='related_name')
     title = models.CharField(max_length=255)
-    
+    icon = ResizedImageField(size=[20, 20],upload_to='icons', blank=True, default='default.jpg')
     def __str__(self):
         return self.title
     
@@ -112,7 +112,7 @@ class EducationInfo(models.Model):
 
 class PrefferedJob(models.Model):
     title = models.CharField(max_length=255)
-
+    icon = ResizedImageField(size=[20, 20],upload_to='preffered-job-icons', blank=True, default='default.jpg')
     def __str__(self):
         return self.title
     
@@ -150,4 +150,10 @@ class GeneratedLeadStatus(models.Model):
         return f"{self.lead.email} ------ Status:{self.status}"
 
    
+class PageMeta(models.Model):
+    pageName = models.CharField(max_length=120)
+    title = models.TextField()
+    description = models.TextField()
 
+    def __str__(self):
+        return self.pageName + "---" + self.title
