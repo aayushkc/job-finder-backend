@@ -157,3 +157,16 @@ class PageMeta(models.Model):
 
     def __str__(self):
         return self.pageName + "---" + self.title
+
+
+class Events(models.Model):
+    title = models.CharField(max_length=120)
+    date = models.DateField()
+    description=models.TextField()
+    time = models.TimeField()
+    venue = models.CharField(max_length=255)
+    completion_status = models.BooleanField(default=False)
+    thumbnail = ResizedImageField(size=[254, 254],upload_to='events-image', blank=True)
+
+    def __str__(self):
+        return self.title

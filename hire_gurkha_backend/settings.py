@@ -130,7 +130,9 @@ DATABASES = {
     }
 
 DOMAIN_NAME = 'api.hiregurkha.com'
+
 REST_FRAMEWORK = {
+    'TIME_FORMAT':'%H:%M',
    
     'DEFAULT_AUTHENTICATION_CLASSES': (
        
@@ -174,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
-
+TIME_INPUT_FORMATS = [ "%H:%M"]
 USE_I18N = True
 
 USE_TZ = True

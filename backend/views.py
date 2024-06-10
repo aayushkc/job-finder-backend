@@ -7,7 +7,7 @@ from django.core import mail
 from django.core.mail import send_mail
 
 
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.exceptions import NotAcceptable, ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -16,13 +16,18 @@ import smtplib
 from .serializers import (UserRegistrationSerializer, SkillsSerializer, 
                           RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer, 
                           IndustrySerializer, PrefferedJobSerializer,
-                          EducationLevelInfoSerializer,PageMetaSerializer)
+                          EducationLevelInfoSerializer,PageMetaSerializer,
+                          EventsSerializer
+                          )
 from .models import (RecruiterLeadDetails, GeneratedLeadStatus, 
                      JobSeeker, Skills, CustomUser,
                      Industry, PrefferedJob,
-                     EducationInfo,PageMeta)
+                     EducationInfo,PageMeta,
+                     Events
+                     )
 from .signals import user_created
 from .permissions import IsUserRecruiter
+from recruiter.customPagination import CustomPagination
 User = get_user_model()
 user_created = Signal()
 # Create your views here.
@@ -160,3 +165,28 @@ class PageMetaCreateView(CreateAPIView):
     permission_classes = [IsUserRecruiter]
     queryset = PageMeta.objects.all()
     serializer_class = PageMetaSerializer
+
+class EventsUpcomingView(ListAPIView):
+    queryset = Events.objects.filter(completion_status=False)
+    serializer_class = EventsSerializer
+    pagination_class = CustomPagination
+
+class EventsCompletedView(ListAPIView):
+    queryset = Events.objects.filter(completion_status=True)
+    serializer_class = EventsSerializer
+    pagination_class = CustomPagination
+
+class EventsCreateView(CreateAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer
+
+class EventsUpdateView(UpdateAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer
+
+class EventsDeleteView(DestroyAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer

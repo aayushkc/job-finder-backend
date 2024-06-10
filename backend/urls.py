@@ -7,7 +7,9 @@ from .views import (RegisterUser, RecruiterLeadDetailsView,
                     IndustryCreateView,
                     PrefferedJobView,
                     EducationLevelInfoView,
-                    PageMetaCreateView,PageMetaUpdateView,PageMetaView)
+                    PageMetaCreateView,PageMetaUpdateView,PageMetaView,
+                    EventsCompletedView,EventsUpcomingView,EventsCreateView,EventsUpdateView,EventsDeleteView
+                    )
 
 
 
@@ -28,4 +30,10 @@ urlpatterns = [
     path("page-meta-view", PageMetaView.as_view(), name="pagemeta-view"),
     path("page-meta-create", PageMetaCreateView.as_view(), name="pagemeta-create"),
     path("page-meta-update/<int:pk>", PageMetaUpdateView.as_view(), name="pagemeta-update"),
+
+    path("events-completed", EventsCompletedView.as_view(), name="event-completed-list-view"),
+    path("events-upcoming", EventsUpcomingView.as_view(), name="event-upcoming-list-view"),
+    path("event-create", EventsCreateView.as_view(), name="event-create-view"),
+    path("event-update/<int:pk>",EventsUpdateView.as_view(), name="event-update-view"),
+    path("event-delete/<int:pk>",EventsDeleteView.as_view(), name="event-delete-view")
 ] 

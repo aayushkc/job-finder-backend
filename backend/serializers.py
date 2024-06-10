@@ -4,7 +4,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
 
-from .models import Recruiter, JobSeeker, Skills, RecruiterLeadDetails, GeneratedLeadStatus, Industry, PrefferedJob, EducationInfo,PageMeta
+from .models import (Recruiter, 
+                     JobSeeker, 
+                     Skills, 
+                     RecruiterLeadDetails, GeneratedLeadStatus, 
+                     Industry, PrefferedJob, 
+                     EducationInfo,PageMeta,
+                     Events
+                     )
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -101,3 +108,8 @@ class PageMetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageMeta
         fields = "__all__"
+
+class EventsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Events
+        fields="__all__"
