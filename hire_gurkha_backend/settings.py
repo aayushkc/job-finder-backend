@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'backend',
     'recruiter',
     'job_seeker',
+    'quiz',
     'blog',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -174,7 +175,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
 TIME_INPUT_FORMATS = [ "%H:%M"]
 USE_I18N = True

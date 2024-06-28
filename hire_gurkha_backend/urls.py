@@ -39,9 +39,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', include('backend.urls')),
+
     path('recruiter/', include('recruiter.urls')),
+
     path('job-seeker/', include('job_seeker.urls')),
     
+    path('quiz/',include('quiz.urls')),
+
     path('cms/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
     path('pages/', include(wagtail_urls)),

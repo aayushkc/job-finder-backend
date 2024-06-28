@@ -37,6 +37,7 @@ def recommend_jobs_for_seeker(seeker):
     similar_jobs_indices = similarity_matrix.argsort()[:, ::-1][:, 1:top_n+1]  # Exclude the job itself
 
    
+   
         
     similar_jobs_indices_list = similar_jobs_indices.tolist()
     

@@ -75,7 +75,7 @@ class CreateJobRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobRequest
-        fields = ["job", "status"]
+        fields = ["job", "status",'quiz_score']
 
 
 class ReadSeekerDetailsSerializer(serializers.ModelSerializer):

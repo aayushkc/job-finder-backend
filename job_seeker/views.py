@@ -88,7 +88,7 @@ class RecommendedJobsAPIView(ListAPIView):
         recommended_jobs = recommend_jobs_for_seeker(seeker)
         applied_job_pks = JobRequest.objects.filter(job_seeker=seeker.seeker, job__in=recommended_jobs).values_list('job__pk', flat=True)
         recommended_job_pks = [job.pk for job in recommended_jobs]
-        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks)
+        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks).order_by("-id")
         return queryset
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -115,10 +115,10 @@ class ListAllJobs(ListAPIView):
         elif query_param_skills and query_param_skills !='null':
             return Job.objects.filter( required_skills = query_param_skills)
         else:
-            return Job.objects.all()
+            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info')
     
     def list(self,request):
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().order_by("-id")
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

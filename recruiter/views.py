@@ -67,7 +67,7 @@ class ListAcceptedJob(ListAPIView):
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
-        queryset = Job.objects.filter(company=recruiter, is_job_approved=True) 
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=True).order_by("-id")
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
@@ -79,7 +79,7 @@ class ListPendingJob(ListAPIView):
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
-        queryset = Job.objects.filter(company=recruiter, is_job_approved=False) 
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=False) .order_by("-id")
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

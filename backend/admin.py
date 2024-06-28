@@ -5,6 +5,7 @@ from .models import (CustomUser, Recruiter, JobSeeker,
                      Events
                      )
 from recruiter.models import RecruiterDetails, Job, JobRequest
+from quiz.models import QuizAnswers,QuizQuestion,JobQuiz
 
 from django import forms
 from django.contrib.auth.models import Group
@@ -109,3 +110,6 @@ admin.site.register(RecruiterLeadDetails)
 admin.site.register(GeneratedLeadStatus)
 admin.site.register(PageMeta)
 admin.site.register(Events)
+admin.site.register(JobQuiz)
+admin.site.register(QuizAnswers)
+admin.site.register(QuizQuestion)

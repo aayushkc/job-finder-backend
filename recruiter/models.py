@@ -2,7 +2,7 @@ from django.db import models
 from backend.models import Recruiter,Industry, Skills, EducationInfo, PrefferedJob, JobSeeker
 from froala_editor.fields import FroalaField
 from django_resized import ResizedImageField
-
+from quiz.models import JobQuiz
 # Create your models here.
 class RecruiterDetails(models.Model):
     ONE_TO_TEN = 0
@@ -88,12 +88,13 @@ class Job(models.Model):
     is_job_approved = models.BooleanField(default=False)
     company = models.ForeignKey(Recruiter, on_delete=models.CASCADE, related_name = 'job_company')
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='job_industry')
+    quiz = models.ForeignKey(JobQuiz,on_delete=models.CASCADE, related_name='quiz_for_job', blank=True, null=True)
     education_info = models.ManyToManyField(EducationInfo, related_name='job_education_info')
     required_skills = models.ManyToManyField(Skills, related_name="jobs_skills")
     job_category = models.ManyToManyField(PrefferedJob, related_name="preffered_job")
 
     def __str__(self):
-        return  "--" + self.title
+        return  "--Job Title: " + self.title + " " + "   --- Comapny: " + self.company.user.username
     
 class JobRequest(models.Model):
     NOT_SEEN = 0
@@ -113,10 +114,11 @@ class JobRequest(models.Model):
     )
     job = models.ForeignKey(Job, on_delete = models.PROTECT, related_name= 'job_request')
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.PROTECT, related_name = 'job_seeker_request')
-
+    quiz_score = models.PositiveIntegerField(default=0)
     seen_status = models.PositiveSmallIntegerField(choices=SEEN_STATUS_CHOICES, default=NOT_SEEN)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=WAITING)
     applied_on = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.job_seeker} - {self.job}"
+    
