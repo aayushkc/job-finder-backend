@@ -88,10 +88,14 @@ class ReadSeekerDetailsSerializer(serializers.ModelSerializer):
 
 class ViewJobRequestSerializer(serializers.ModelSerializer):
     job_seeker = ReadSeekerDetailsSerializer()
+    quiz_question = serializers.SerializerMethodField('get_no_of_question')
     class Meta:
         model = JobRequest
-        fields = "__all__"
+        fields = ['id','job_seeker','quiz_question', 'quiz_score', 'seen_status', 'status', 'applied_on']
         depth = 1
+
+    def get_no_of_question(self,obj):
+        return obj.job.quiz.get_number_of_questions()
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

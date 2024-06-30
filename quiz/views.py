@@ -32,7 +32,7 @@ class ListQuizName(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         user = Recruiter.objects.get(user=request.user)
-        queryset = JobQuiz.objects.filter(recruiter=user)
+        queryset = JobQuiz.objects.filter(recruiter=user).order_by("-id")
         serializer = JobQuizSerializer(queryset,many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -42,7 +42,7 @@ class ListQuiz(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         user = Recruiter.objects.get(user=request.user)
-        self.queryset = JobQuiz.objects.filter(recruiter=user)
+        self.queryset = JobQuiz.objects.filter(recruiter=user).order_by("-id")
         serializer = JobQuizSerializer(self.queryset,many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

@@ -76,7 +76,7 @@ class ViewJobRequest(ListAPIView):
        
     def get_queryset(self):
         user = self.request.user.seeker
-        seeker = JobRequest.objects.filter(job_seeker= user)
+        seeker = JobRequest.objects.filter(job_seeker= user).order_by("-id")
         return seeker
 
 class RecommendedJobsAPIView(ListAPIView):
