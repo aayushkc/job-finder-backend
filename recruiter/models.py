@@ -3,6 +3,7 @@ from backend.models import Recruiter,Industry, Skills, EducationInfo, PrefferedJ
 from froala_editor.fields import FroalaField
 from django_resized import ResizedImageField
 from quiz.models import JobQuiz
+import uuid
 # Create your models here.
 class RecruiterDetails(models.Model):
     ONE_TO_TEN = 0
@@ -73,7 +74,7 @@ class Job(models.Model):
         (FRESHERS, "Freshers"),
         (EXPERIENCED, "Experienced"),
     )
-
+    job_unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     title = models.CharField(max_length = 255)
     description = FroalaField()
     required_years_of_experience = models.PositiveSmallIntegerField(choices=WORK_EXPERIENCE_CHOICES)

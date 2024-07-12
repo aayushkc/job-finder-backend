@@ -24,10 +24,9 @@ class RecruiterDetailsSerializer(serializers.ModelSerializer):
         exclude = ('user',)
         
 class JobSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Job
-        exclude = ('company',)
+        exclude = ('company', 'job_unique_id')
      
 class GetCompanyNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -95,7 +94,10 @@ class ViewJobRequestSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_no_of_question(self,obj):
-        return obj.job.quiz.get_number_of_questions()
+        if obj.job.quiz:
+             return obj.job.quiz.get_number_of_questions() 
+        else:
+            return 0
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

@@ -85,6 +85,9 @@ class RecommendedJobsAPIView(ListAPIView):
 
     def get_queryset(self):
         seeker = self.request.user  # Assuming the authenticated user is the job seeker
+        check_seeker = JobSeekerDetails.objects.filter(user=seeker.seeker).exists()
+        if not check_seeker:
+            return []
         recommended_jobs = recommend_jobs_for_seeker(seeker)
         applied_job_pks = JobRequest.objects.filter(job_seeker=seeker.seeker, job__in=recommended_jobs).values_list('job__pk', flat=True)
         recommended_job_pks = [job.pk for job in recommended_jobs]
@@ -111,9 +114,9 @@ class ListAllJobs(ListAPIView):
         query_param_industry = self.request.GET.get('industry')
         query_param_skills = self.request.GET.get('skills')
         if query_param_industry and query_param_industry !='null':
-            return Job.objects.filter(industry=query_param_industry)
+            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info').filter(industry=query_param_industry)
         elif query_param_skills and query_param_skills !='null':
-            return Job.objects.filter( required_skills = query_param_skills)
+            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info').filter( required_skills = query_param_skills)
         else:
             return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info')
     

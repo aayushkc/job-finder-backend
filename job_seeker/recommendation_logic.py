@@ -1,6 +1,5 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.preprocessing import MultiLabelBinarizer
 from django.db.models import Q
 from recruiter.models import Job
 def recommend_jobs_for_seeker(seeker):

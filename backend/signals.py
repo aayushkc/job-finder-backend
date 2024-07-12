@@ -63,8 +63,8 @@ def user_created(sender, instance, **kwargs):
                     absolute_reset_password_link = f'https://{current_site.domain}{reset_password_link}'
 
                     # Construct the email message
-                    email_subject = 'Reset Your Password'
-                    email_message = f'Please follow this link to reset your password: {absolute_reset_password_link}'
+                    email_subject = 'Welcome to HireGurkha'
+                    email_message = f'Please follow this link to create password for your account: {absolute_reset_password_link}'
 
                     try:
                             connection = mail.get_connection()

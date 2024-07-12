@@ -101,9 +101,7 @@ admin.site.register(Recruiter)
 admin.site.register(JobSeeker)
 admin.site.register(RecruiterDetails)
 admin.site.register(Industry)
-admin.site.register(Skills)
 admin.site.register(EducationInfo)
-admin.site.register(Job)
 admin.site.register(PrefferedJob)
 admin.site.register(JobRequest)
 admin.site.register(RecruiterLeadDetails)
@@ -113,3 +111,12 @@ admin.site.register(Events)
 admin.site.register(JobQuiz)
 admin.site.register(QuizAnswers)
 admin.site.register(QuizQuestion)
+
+class SkillsAdmin(admin.ModelAdmin):
+    ordering = ['title']
+admin.site.register(Skills, SkillsAdmin)
+
+
+class JobAdmin(admin.ModelAdmin):
+    list_display = ['title','is_job_approved','company']
+admin.site.register(Job, JobAdmin)
