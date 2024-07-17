@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.core import mail
+from django.core.mail import send_mail, EmailMessage
 
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from rest_framework import status
 from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile,ViewJobRequestSerializer, CreateJobRequestSerializer
 from .customPagination import CustomPagination
 
-from backend.models import Recruiter, CustomUser
+from backend.models import Recruiter, CustomUser, JobSeeker
 from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly,IsRecruiterJobRequestObjectOwnerOrReadOnly
 from .models import RecruiterDetails, Job, JobRequest
 
@@ -131,3 +132,61 @@ class UpdateJobRequest(UpdateAPIView):
     permission_classes = [IsUserRecruiter]
     queryset = JobRequest.objects.all()
     serializer_class = CreateJobRequestSerializer
+
+    def perform_update(self, serializer):
+        print(self.request.data['user'])
+        print(JobSeeker.objects.get(id=self.request.data['user']).user.email)
+        seeker = JobSeeker.objects.get(id=self.request.data['user']).user.email
+        job_title = self.request.data['job_title']
+        company = self.request.data['company']
+        if self.request.data['status'] == '2':
+            email_subject = 'Congratulations! Your Job Application has been Accepted'
+            email_message = f"""
+            Dear, {seeker},<br></br> 
+            <p>We are thrilled to inform you that your application for the position of <strong>{job_title} </strong> at <strong>{company}</strong> has been accepted!
+            </p>
+            
+            <p style='margin-top:'0.6em''>Our team was impressed with your skills and experience, and we believe you will be a valuable addition to the company. 
+            {company} will reach out to you for further details.
+            </p>
+
+            <p style='margin-top:'0.6em''>Congratulations once again, and we look forward to seeing you succeed!</p>
+
+            <h3 style='margin-top:'1em''>Best Regards, </h3>
+            <p style='margin-top:'0.2em''>The HireGurkha Team</p>
+            <a href="https://hiregurkha.com">HireGrukha.com </a>
+
+            """
+        elif self.request.data['status'] == '1':
+            email_subject = 'Application Rejeceted'
+            email_message = f"""
+            Dear, {seeker},<br></br> 
+            <p>Thank you for applying for the position of <strong>{job_title} </strong> at <strong>{company}</strong>. We appreciate the time and effort you invested in your application.
+            After careful consideration, we regret to inform you that your application has not been successful on this occasion.
+            </p>
+            
+            <p style='margin-top:'0.6em''>Please don't be discouraged by this decision. We encourage you to continue exploring opportunities on HireGurkha.com. 
+            New positions are added regularly, and we believe that there are many more opportunities that will suit your skills and experience.
+            </p>
+
+            <p style='margin-top:'0.6em''>If you have any questions or need any further information, feel free to reach out to us.</p>
+
+            <p style='margin-top:'0.6em''>Thank you once again for your interest in HireGurkha and for considering <strong>{company}</strong> as your potential employer.</p>
+            <h3 style='margin-top:'1em''>Best Regards, </h3>
+            <p style='margin-top:'0.2em''>The HireGurkha Team</p>
+            <a href="https://hiregurkha.com">HireGrukha.com </a>
+
+            """
+        else:
+            return super().perform_update(serializer)
+        try:
+                           
+            connection = mail.get_connection()
+            connection.open()
+                            
+            email = EmailMessage(email_subject, email_message, 'hiregurkhaofficial@gmail.com', [seeker])
+            email.content_subtype = "html"
+            email.send()
+        except Exception as e:
+            raise Http404
+        return super().perform_update(serializer)

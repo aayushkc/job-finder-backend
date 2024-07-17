@@ -29,10 +29,10 @@ class ReadSeekerDetailsSerializer(serializers.ModelSerializer):
         exclude = ('user',)
 
     def get_profilePic(self,obj):
-        return f'https://www.media.hiregurkha.com/{obj.profilePic}'
+        return f'http://127.0.01:8000/media/{obj.profilePic}'
     
     def get_resume(self,obj):
-        return f'https://www.media.hiregurkha.com/{obj.resume}'
+        return f'http://127.0.01:8000/media/{obj.resume}'
 
 
 class RecommendedJobSerializer(serializers.ModelSerializer):
@@ -61,7 +61,7 @@ class RecommendedJobSerializer(serializers.ModelSerializer):
         return obj.company.recruiter_details.description
     
     def get_company_logo(self,obj):
-        return f'https://www.media.hiregurkha.com/{obj.company.recruiter_details.logo}'
+        return f'http://127.0.01:8000/media/{obj.company.recruiter_details.logo}'
     
     def get_applied_number(self,obj):
         return obj.job_request.count()

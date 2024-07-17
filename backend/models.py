@@ -11,7 +11,7 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
         unique=True,
     )
     username = models.CharField(
-         verbose_name="Username",
+        verbose_name="Username",
         max_length=255,
     )
     is_active = models.BooleanField(default=True)
@@ -21,7 +21,6 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     objects = MyUserManager()
 
     USERNAME_FIELD = "email"  #this filed (email) is used when loggin in
-
     def __str__(self):
         return self.email
 

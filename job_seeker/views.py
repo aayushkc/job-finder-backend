@@ -114,14 +114,15 @@ class ListAllJobs(ListAPIView):
         query_param_industry = self.request.GET.get('industry')
         query_param_skills = self.request.GET.get('skills')
         if query_param_industry and query_param_industry !='null':
-            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info').filter(industry=query_param_industry)
+            return Job.objects.filter(industry=query_param_industry)
         elif query_param_skills and query_param_skills !='null':
-            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info').filter( required_skills = query_param_skills)
+            return Job.objects.filter( required_skills = query_param_skills)
         else:
-            return Job.objects.prefetch_related('company','industry','quiz','required_skills','job_category','education_info')
+            return Job.objects.all()
     
     def list(self,request):
         queryset = self.get_queryset().order_by("-id")
-        serializer = ReadJobSerializer(queryset, many=True)
+        prepared_serializer = ReadJobSerializer.setup_eager_loading(queryset)
+        serializer = ReadJobSerializer(prepared_serializer, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

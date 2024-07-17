@@ -66,8 +66,12 @@ class ReadJobSerializer(serializers.ModelSerializer):
         return obj.company.recruiter_details.description
     
     def get_company_logo(self,obj):
-        return f'https://www.media.hiregurkha.com/{obj.company.recruiter_details.logo}'
+        return f'http://127.0.01:8000/media/{obj.company.recruiter_details.logo}'
     
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.select_related('company','industry','quiz').prefetch_related('required_skills','job_category','education_info')
+        return queryset
         
     
 class CreateJobRequestSerializer(serializers.ModelSerializer):

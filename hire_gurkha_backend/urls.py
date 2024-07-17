@@ -66,6 +66,8 @@ urlpatterns = [
      path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
      path("__debug__/", include("debug_toolbar.urls")),
 
+     path('auth/', include('drf_social_oauth2.urls', namespace='drf'))
+
     
 
     

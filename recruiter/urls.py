@@ -16,8 +16,11 @@ urlpatterns = [
     #Edit and Get the Recruiter Profile Detaisl Object
     path("view-recruiter-details/<int:pk>", RetriveUpdateRecruiterDetails.as_view(), name="view-recrutier-details"), 
     
+    #Endpoints for Job request model
     path("view-recruiter-job-requests/<int:id>", GetJobApplicants.as_view(), name="view-recrutier-details-job-requests"), 
     path("edit-recruiter-job-requests/<int:pk>", UpdateJobRequest.as_view(), name="edit-recrutier-details-job-requests"), 
+
+    
     # Jobs Routes
     path("add-job/", CreateJob.as_view(), name="add-job"),
     path("view-jobs/", ListAcceptedJob.as_view(), name="view-job"),
