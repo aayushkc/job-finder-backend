@@ -8,14 +8,14 @@ from .views import (RegisterUser, RecruiterLeadDetailsView,
                     PrefferedJobView,
                     EducationLevelInfoView,
                     PageMetaCreateView,PageMetaUpdateView,PageMetaView,
-                    EventsCompletedView,EventsUpcomingView,EventsCreateView,EventsUpdateView,EventsDeleteView
+                    EventsCompletedView,EventsUpcomingView,EventsCreateView,EventsUpdateView,EventsDeleteView,
                     )
 
 
 
 urlpatterns = [
     path('auth/register/<str:user_type>', view=RegisterUser.as_view(), name='register-user'),
-
+    
     path('generate-recruiter-lead', view=RecruiterLeadDetailsView.as_view(), name='recruiter-lead'),
 
     path('list-generated-lead', view=GeneratedLeadStatusView.as_view(), name='list-recruiter-lead'),

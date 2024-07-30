@@ -31,7 +31,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password', 'confirm_password')
 
     def validate(self, attrs):
-        # here check password is strong or what! :D
+        # here check password is strong or what! 
         validate_password(attrs.get('password'))
 
         if attrs.get('password') != attrs.get('confirm_password'):

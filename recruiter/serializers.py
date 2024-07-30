@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models import Recruiter, JobSeeker
+from backend.models import Recruiter, JobSeeker, Skills, PrefferedJob
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import RecruiterDetails, Job, JobRequest
 
@@ -10,6 +10,7 @@ from job_seeker.models import JobSeekerDetails
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import request
 
+from datetime import datetime
 
 class GetReacuiterProfile(serializers.ModelSerializer):
     industry = serializers.StringRelatedField()
@@ -33,6 +34,16 @@ class GetCompanyNameSerializer(serializers.ModelSerializer):
         model = RecruiterDetails
         fields = ['name', 'user']
 
+
+class ReadSkillsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skills
+        exclude = ('icon',)
+
+class ReadJobCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrefferedJob
+        exclude = ('icon',)
 class ReadJobSerializer(serializers.ModelSerializer):
    
     description = serializers.CharField()
@@ -41,26 +52,22 @@ class ReadJobSerializer(serializers.ModelSerializer):
     number_of_vacancy = serializers.IntegerField()
     work_location_type = serializers.CharField(source= "get_work_location_type_display")
     level = serializers.CharField(source="get_level_display")
-    
-    applied = serializers.SerializerMethodField("get_applied_number")
+    required_skills = ReadSkillsSerializer(many=True)
+    job_category = ReadJobCategorySerializer(many=True)
+    applied = serializers.IntegerField(source ="job_request_count")
     industry = serializers.StringRelatedField()
     company = serializers.SerializerMethodField('get_company_name')
     company_description = serializers.SerializerMethodField('get_company_description')
     logo = serializers.SerializerMethodField("get_company_logo")
-    # education_info = serializers.StringRelatedField(many=True)
-    # required_skills = serializers.StringRelatedField(many=True)
-    # job_category = serializers.StringRelatedField(many=True)
+    has_expried = serializers.SerializerMethodField("get_job_expried")
 
     class Meta:
         model = Job
         fields = "__all__"
+        read_only=True
         depth = 1
     def get_company_name(self,obj):
-        print(obj.company)
         return obj.company.recruiter_details.name
-    
-    def get_applied_number(self,obj):
-        return obj.job_request.count()
 
     def get_company_description(self,obj):
         return obj.company.recruiter_details.description
@@ -68,9 +75,12 @@ class ReadJobSerializer(serializers.ModelSerializer):
     def get_company_logo(self,obj):
         return f'http://127.0.01:8000/media/{obj.company.recruiter_details.logo}'
     
+    def get_job_expried(self,obj):
+        return datetime.now().date() > obj.apply_before
+
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.select_related('company','industry','quiz').prefetch_related('required_skills','job_category','education_info')
+        queryset = queryset.select_related('industry','quiz','company__recruiter_details').prefetch_related('required_skills','job_category','education_info')
         return queryset
         
     
@@ -109,7 +119,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        print(user.email)
         token['userId'] = user.pk
         token['email'] = user.email
         token["isRecruiter"] = user.is_recriuter

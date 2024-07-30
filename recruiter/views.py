@@ -1,18 +1,18 @@
-from django.shortcuts import render
+
 from django.http import Http404
 from django.core import mail
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
+from django.db.models import Count
 
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, DestroyAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from rest_framework import status
 
 from .serializers import RecruiterDetailsSerializer, JobSerializer, ReadJobSerializer, GetReacuiterProfile,ViewJobRequestSerializer, CreateJobRequestSerializer
 from .customPagination import CustomPagination
 
-from backend.models import Recruiter, CustomUser, JobSeeker
-from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly,IsRecruiterJobRequestObjectOwnerOrReadOnly
+from backend.models import Recruiter, JobSeeker
+from backend.permissions import IsUserRecruiter, IsRecruiterJobObjectOwnerOrReadOnly,IsRecruiterDetailsObjectorReadOnly
 from .models import RecruiterDetails, Job, JobRequest
 
 from job_seeker.models import JobSeekerDetails
@@ -68,7 +68,7 @@ class ListAcceptedJob(ListAPIView):
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
-        queryset = Job.objects.filter(company=recruiter, is_job_approved=True).order_by("-id")
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=True).order_by("-id").annotate(job_request_count=Count('job_request'))
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
@@ -80,7 +80,7 @@ class ListPendingJob(ListAPIView):
     def list(self, request):
         user = request.user
         recruiter = Recruiter.objects.get(user=user)
-        queryset = Job.objects.filter(company=recruiter, is_job_approved=False) .order_by("-id")
+        queryset = Job.objects.filter(company=recruiter, is_job_approved=False) .order_by("-id").annotate(job_request_count=Count('job_request'))
         serializer = ReadJobSerializer(queryset, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
@@ -88,7 +88,7 @@ class ListPendingJob(ListAPIView):
 
 class RetriveUpdateJob(RetrieveUpdateAPIView):
     permission_classes = [IsRecruiterJobObjectOwnerOrReadOnly]
-    queryset = Job.objects.all()
+    queryset = Job.objects.all().annotate(job_request_count=Count('job_request'))
 
     def get_serializer_class(self):
 

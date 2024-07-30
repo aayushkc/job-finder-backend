@@ -23,7 +23,6 @@ def recommend_jobs_for_seeker(seeker):
         combined_text = f"{skills_text} {job_categories_text}"  # Combine skills and job categories
         job_features.append(combined_text)
 
-    print("Featuresssssssssssssssssssssssss",job_features)
     # Vectorize features using TF-IDF
     tfidf_vectorizer = TfidfVectorizer()
     job_feature_vectors = tfidf_vectorizer.fit_transform(job_features)

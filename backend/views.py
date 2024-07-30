@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from django.contrib import messages
 from django.dispatch import Signal
 from django.http.response import Http404
 from django.core import mail
@@ -45,7 +44,7 @@ class RegisterUser(CreateAPIView):
             user = serializer.save(is_seeker=True)
         else:
             raise NotAcceptable
-
+        
 class SkillSetCreateView(CreateAPIView):
     permission_classes = [IsAdminUser]
     queryset = Skills.objects.all()
