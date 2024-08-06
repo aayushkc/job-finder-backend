@@ -1,8 +1,8 @@
-from django.db.models import Count
+from django.db.models import Count,Case,When,BooleanField
+from django.db.models.functions import Now
 
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.exceptions import ValidationError
-
 
 from backend.permissions import IsUserSeeker, IsSeekerDetailsObjectorReadOnly
 from backend.models import JobSeeker
@@ -89,7 +89,7 @@ class RecommendedJobsAPIView(ListAPIView):
         recommended_jobs = recommend_jobs_for_seeker(seeker)
         applied_job_pks = JobRequest.objects.filter(job_seeker=seeker.seeker, job__in=recommended_jobs).values_list('job__pk', flat=True)
         recommended_job_pks = [job.pk for job in recommended_jobs]
-        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks).order_by("-id").annotate(job_request_count=Count('job_request'))
+        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks).annotate(job_request_count=Count('job_request')).annotate(expried=Case(When(apply_before__lt=Now(),then=True), default=False, output_field=BooleanField())).order_by('expried','-id')
         queryset = RecommendedJobSerializer.setup_eager_loading(queryset)
         return queryset
     def get(self, request, *args, **kwargs):
@@ -118,12 +118,12 @@ class ListAllJobs(ListAPIView):
             queryset= Job.objects.filter( required_skills = query_param_skills)
         else:
             queryset= Job.objects.all()
-        queryset = queryset.annotate(job_request_count=Count('job_request'))
+        queryset = queryset.annotate(job_request_count=Count('job_request')).annotate(expried=Case(When(apply_before__lt=Now(),then=True), default=False, output_field=BooleanField())).order_by('expried','-id')
         queryset = ReadJobSerializer.setup_eager_loading(queryset)
         return queryset
     
     def list(self,request):
-        queryset = self.get_queryset().order_by("-id")
+        queryset = self.get_queryset()
         serializer = ReadJobSerializer(queryset,many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

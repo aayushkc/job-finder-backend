@@ -1,25 +1,25 @@
-from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.dispatch import Signal
 from django.http.response import Http404
 from django.core import mail
 from django.core.mail import send_mail
+from django.db.models import Case, When, BooleanField
+from django.db.models.functions import Now
 
-
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.exceptions import NotAcceptable, ValidationError
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-import smtplib
+
 from .serializers import (UserRegistrationSerializer, SkillsSerializer, 
                           RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer, 
                           IndustrySerializer, PrefferedJobSerializer,
                           EducationLevelInfoSerializer,PageMetaSerializer,
                           EventsSerializer
                           )
-from .models import (RecruiterLeadDetails, GeneratedLeadStatus, 
-                     JobSeeker, Skills, CustomUser,
+from .models import (GeneratedLeadStatus, 
+                    Skills,
                      Industry, PrefferedJob,
                      EducationInfo,PageMeta,
                      Events
@@ -166,12 +166,12 @@ class PageMetaCreateView(CreateAPIView):
     serializer_class = PageMetaSerializer
 
 class EventsUpcomingView(ListAPIView):
-    queryset = Events.objects.filter(completion_status=False)
+    queryset = Events.objects.annotate(event_completion_check=Case(When(date__lt=Now(), then=True), default=False, output_field=BooleanField())).filter(event_completion_check=False).order_by('-id')
     serializer_class = EventsSerializer
     pagination_class = CustomPagination
 
 class EventsCompletedView(ListAPIView):
-    queryset = Events.objects.filter(completion_status=True)
+    queryset = Events.objects.annotate(event_completion_check=Case(When(date__lt = Now(), then=True),default=False,output_field=BooleanField())).filter(event_completion_check=True).order_by('-id')
     serializer_class = EventsSerializer
     pagination_class = CustomPagination
 
