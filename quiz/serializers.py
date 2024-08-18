@@ -25,7 +25,7 @@ class JobQuizSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
     class Meta:
         model = JobQuiz
-        fields = ['id','quiz_name', 'questions', 'no_of_question']
+        fields = ['id','quiz_name','total_quiz_time', 'questions', 'no_of_question']
     
 
     def create(self, validated_data):
@@ -42,14 +42,14 @@ class JobQuizSerializer(serializers.ModelSerializer):
         return job_quiz
 
     def update(self, instance, validated_data):
-        print("Entererererererdddd Update")
+       
         questions_data = validated_data.pop('questions')
         instance.quiz_name = validated_data.get('quiz_name', instance.quiz_name)
+        instance.total_quiz_time = validated_data.get('total_quiz_time', instance.total_quiz_time)
         instance.save()
 
         existing_question_ids = [question.id for question in instance.questions.all()]
         new_question_ids = [question['id'] for question in questions_data if 'id' in question]
-        print(new_question_ids)
         # Delete questions that are not in the request
         for question_id in existing_question_ids:
             if question_id not in new_question_ids:

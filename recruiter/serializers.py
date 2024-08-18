@@ -88,7 +88,7 @@ class CreateJobRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobRequest
-        fields = ["job", "status",'quiz_score']
+        fields = ["job", "status",'quiz_score','quiz_completion_time']
 
 
 class ReadSeekerDetailsSerializer(serializers.ModelSerializer):
@@ -104,7 +104,7 @@ class ViewJobRequestSerializer(serializers.ModelSerializer):
     quiz_question = serializers.SerializerMethodField('get_no_of_question')
     class Meta:
         model = JobRequest
-        fields = ['id','job_seeker','quiz_question', 'quiz_score', 'seen_status', 'status', 'applied_on']
+        fields = ['id','job_seeker','quiz_question', 'quiz_score', 'seen_status', 'status', 'applied_on','quiz_completion_time']
         depth = 1
 
     def get_no_of_question(self,obj):

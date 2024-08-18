@@ -116,6 +116,7 @@ class JobRequest(models.Model):
     job = models.ForeignKey(Job, on_delete = models.PROTECT, related_name= 'job_request')
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.PROTECT, related_name = 'job_seeker_request')
     quiz_score = models.PositiveIntegerField(default=0)
+    quiz_completion_time = models.DurationField(blank=True, null=True)
     seen_status = models.PositiveSmallIntegerField(choices=SEEN_STATUS_CHOICES, default=NOT_SEEN)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=WAITING)
     applied_on = models.DateField(auto_now=True)

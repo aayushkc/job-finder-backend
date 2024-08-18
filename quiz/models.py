@@ -1,8 +1,10 @@
 from django.db import models
 from backend.models import Recruiter
+from datetime import timedelta
 # Create your models here.
 class JobQuiz(models.Model):
     quiz_name = models.CharField(max_length=120)
+    total_quiz_time = models.DurationField(default=timedelta(minutes=30))
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE, related_name="recruiter_quiz")
     def get_number_of_questions(self):
         cnt =  QuizQuestion.objects.filter(quiz = self).count()

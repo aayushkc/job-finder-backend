@@ -67,6 +67,7 @@ class ListQuizQuestions(generics.ListAPIView):
     serializer_class = QuizQuestionSerializer
 
 class DeleteQuestionObject(generics.DestroyAPIView):
+    permission_classes = [IsUserRecruiter]
     queryset = QuizQuestion.objects.all()
     serializer_class = QuizQuestionSerializer
 

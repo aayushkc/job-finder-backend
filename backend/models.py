@@ -123,7 +123,7 @@ class RecruiterLeadDetails(models.Model):
         unique=True,
     )
     name = models.CharField(max_length = 120)
-    phone = models.PositiveBigIntegerField(unique=True)
+    phone = models.PositiveBigIntegerField(unique=True, blank=True, null=True)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
 

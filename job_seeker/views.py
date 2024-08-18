@@ -87,11 +87,7 @@ class RecommendedJobsAPIView(ListAPIView):
         if not check_seeker:
             return []
         recommended_jobs = recommend_jobs_for_seeker(seeker)
-        applied_job_pks = JobRequest.objects.filter(job_seeker=seeker.seeker, job__in=recommended_jobs).values_list('job__pk', flat=True)
-        recommended_job_pks = [job.pk for job in recommended_jobs]
-        queryset = Job.objects.filter(pk__in=recommended_job_pks).exclude(pk__in=applied_job_pks).annotate(job_request_count=Count('job_request')).annotate(expried=Case(When(apply_before__lt=Now(),then=True), default=False, output_field=BooleanField())).order_by('expried','-id')
-        queryset = RecommendedJobSerializer.setup_eager_loading(queryset)
-        return queryset
+        return recommended_jobs
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = RecommendedJobSerializer(queryset, many=True, context ={'request':request})
@@ -118,7 +114,7 @@ class ListAllJobs(ListAPIView):
             queryset= Job.objects.filter( required_skills = query_param_skills)
         else:
             queryset= Job.objects.all()
-        queryset = queryset.annotate(job_request_count=Count('job_request')).annotate(expried=Case(When(apply_before__lt=Now(),then=True), default=False, output_field=BooleanField())).order_by('expried','-id')
+        queryset = queryset.annotate(job_request_count=Count('job_request'),expried=Case(When(apply_before__lt=Now(),then=True), default=False, output_field=BooleanField())).order_by('expried','apply_before')
         queryset = ReadJobSerializer.setup_eager_loading(queryset)
         return queryset
     
