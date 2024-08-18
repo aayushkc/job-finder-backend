@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
+from phonenumber_field.serializerfields import PhoneNumberField
 
 from .models import (Recruiter, 
                      JobSeeker, 
@@ -82,10 +83,10 @@ class EducationLevelInfoSerializer(serializers.ModelSerializer):
         fields = ('id','education_level', 'education_level_name', 'degree_name')
 
 class RecruiterLeadDetailsSerializer(serializers.ModelSerializer):
+    phone_number = PhoneNumberField()
     class Meta:
         model = RecruiterLeadDetails
-        fields = "__all__"
-
+        fields = ['email', 'name', 'phone_number', 'meeting_date', 'meeting_time']
     @staticmethod
     def create_lead_status(lead):
             GeneratedLeadStatus.objects.create(lead=lead)
@@ -97,6 +98,7 @@ class RecruiterLeadDetailsSerializer(serializers.ModelSerializer):
 
 
 class GeneratedLeadStatusSerializer(serializers.ModelSerializer):
+    phone_number = PhoneNumberField()
     class Meta:
         model = GeneratedLeadStatus
         fields = "__all__"

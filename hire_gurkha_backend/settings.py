@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'job_seeker',
     'quiz',
     'blog',
+    "phonenumber_field",
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',

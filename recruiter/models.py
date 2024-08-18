@@ -3,7 +3,7 @@ from backend.models import Recruiter,Industry, Skills, EducationInfo, PrefferedJ
 from froala_editor.fields import FroalaField
 from django_resized import ResizedImageField
 from quiz.models import JobQuiz
-
+from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 class RecruiterDetails(models.Model):
     ONE_TO_TEN = 0
@@ -29,7 +29,8 @@ class RecruiterDetails(models.Model):
     logo = ResizedImageField(size=[105, 80],upload_to='logos', blank=True, default='default.jpg')
     location = models.CharField(max_length = 255)
     description = FroalaField()
-    phone = models.PositiveBigIntegerField()
+    phone = models.PositiveBigIntegerField(blank=True, null=True)
+    phone_number = PhoneNumberField(blank=True)
     company_size = models.PositiveSmallIntegerField(choices=COMPANY_SIZES_CHOICES)
     company_min_size =  models.PositiveSmallIntegerField(default=1)
     company_max_size = models.PositiveSmallIntegerField(default=10)

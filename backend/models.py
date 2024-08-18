@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
 from .managers import MyUserManager
 from django_resized import ResizedImageField
-
+from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 class CustomUser(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(
@@ -124,6 +124,7 @@ class RecruiterLeadDetails(models.Model):
     )
     name = models.CharField(max_length = 120)
     phone = models.PositiveBigIntegerField(unique=True, blank=True, null=True)
+    phone_number = PhoneNumberField(blank=True)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
 
