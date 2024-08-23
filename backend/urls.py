@@ -9,6 +9,7 @@ from .views import (RegisterUser, RecruiterLeadDetailsView,
                     EducationLevelInfoView,
                     PageMetaCreateView,PageMetaUpdateView,PageMetaView,
                     EventsCompletedView,EventsUpcomingView,EventsCreateView,EventsUpdateView,EventsDeleteView,
+                    GetAllSkillsWithJob, GetAllPrefferedJobssWithJob
                     )
 
 
@@ -35,5 +36,8 @@ urlpatterns = [
     path("events-upcoming", EventsUpcomingView.as_view(), name="event-upcoming-list-view"),
     path("event-create", EventsCreateView.as_view(), name="event-create-view"),
     path("event-update/<int:pk>",EventsUpdateView.as_view(), name="event-update-view"),
-    path("event-delete/<int:pk>",EventsDeleteView.as_view(), name="event-delete-view")
+    path("event-delete/<int:pk>",EventsDeleteView.as_view(), name="event-delete-view"),
+
+    path('all-skills-with-job', GetAllSkillsWithJob.as_view(), name='all-skills-with-job'),
+    path('all-prefferedjob-with-job', GetAllPrefferedJobssWithJob.as_view(), name='all-preffered-with-job'),
 ] 

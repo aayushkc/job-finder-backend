@@ -28,7 +28,7 @@ class JobQuizSerializer(serializers.ModelSerializer):
         fields = ['id','quiz_name','total_quiz_time', 'questions', 'no_of_question']
     
 
-    def create(self, validated_data):
+    def create(self, validated_data):   
         
         questions_data = validated_data.pop('questions')
         job_quiz = JobQuiz.objects.create(**validated_data)

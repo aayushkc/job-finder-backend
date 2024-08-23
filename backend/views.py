@@ -5,6 +5,7 @@ from django.core import mail
 from django.core.mail import send_mail
 from django.db.models import Case, When, BooleanField
 from django.db.models.functions import Now
+from django.db import connection
 
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.exceptions import NotAcceptable, ValidationError
@@ -30,6 +31,17 @@ from recruiter.customPagination import CustomPagination
 User = get_user_model()
 user_created = Signal()
 # Create your views here.
+
+def my_custom_sql(table_name, field_name):
+    """
+    param:table_name -> The name of the table in database to access
+    param:field_name -> The name of the column to be selected
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(f"SELECT DISTINCT {field_name} from {table_name}")
+        row = cursor.fetchall()
+
+    return row
 
 class RegisterUser(CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -189,3 +201,17 @@ class EventsDeleteView(DestroyAPIView):
     permission_classes = [IsAdminUser]
     queryset = Events.objects.all()
     serializer_class = EventsSerializer
+
+
+class GetAllSkillsWithJob(ListAPIView):
+    qr = my_custom_sql('recruiter_job_required_skills','skills_id')
+    skills_id = [id[0] for id in qr]
+    queryset = Skills.objects.filter(pk__in = skills_id)
+    serializer_class = SkillsSerializer
+    
+class GetAllPrefferedJobssWithJob(ListAPIView):
+    qr = my_custom_sql('recruiter_job_job_category','prefferedjob_id')
+    preffered_job_id = [id[0] for id in qr]
+    queryset = PrefferedJob.objects.filter(pk__in = preffered_job_id)
+    serializer_class = PrefferedJobSerializer
+    
