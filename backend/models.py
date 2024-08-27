@@ -14,6 +14,7 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
         verbose_name="Username",
         max_length=255,
     )
+    is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_recriuter = models.BooleanField(default=False)

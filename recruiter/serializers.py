@@ -27,7 +27,7 @@ class RecruiterDetailsSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
-        exclude = ('company')
+        exclude = ('company',)
      
 class GetCompanyNameSerializer(serializers.ModelSerializer):
     class Meta:

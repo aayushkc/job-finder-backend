@@ -95,6 +95,7 @@ class RetriveUpdateJob(RetrieveUpdateAPIView):
         if self.request.method == 'PUT':
             return JobSerializer
         return ReadJobSerializer
+    
 
 class DeleteJob(DestroyAPIView):
     serializer_class = JobSerializer
@@ -129,6 +130,10 @@ class ViewSeekerDetails(RetrieveAPIView):
     serializer_class= ReadSeekerDetailsSerializer
     
 class UpdateJobRequest(UpdateAPIView):
+    """
+    The JobRequest is created by seeker.
+
+    """
     permission_classes = [IsUserRecruiter]
     queryset = JobRequest.objects.all()
     serializer_class = CreateJobRequestSerializer

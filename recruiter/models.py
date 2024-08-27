@@ -87,6 +87,7 @@ class Job(models.Model):
     level = models.PositiveSmallIntegerField(choices=JOB_LEVEL_CHOICES)
     apply_before = models.DateField()
     is_job_approved = models.BooleanField(default=False)
+    job_approval_email_sent = models.BooleanField(default=False)
     company = models.ForeignKey(Recruiter, on_delete=models.CASCADE, related_name = 'job_company')
     industry = models.ForeignKey(Industry, on_delete = models.CASCADE, related_name='job_industry')
     quiz = models.ForeignKey(JobQuiz,on_delete=models.CASCADE, related_name='quiz_for_job', blank=True, null=True)

@@ -1,22 +1,24 @@
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.http import Http404, HttpResponseServerError
-from .models import CustomUser, GeneratedLeadStatus, Recruiter, RecruiterLeadDetails
+from django.http import Http404
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.core import mail
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.sites.models import Site
 from django.db import transaction
-from django.core.exceptions import SuspiciousOperation
+
 from rest_framework.exceptions import ValidationError
+
+from .models import  GeneratedLeadStatus, Recruiter, RecruiterLeadDetails
+from recruiter.models import Job
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -136,3 +138,34 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
+
+@receiver(pre_save,sender=Job)
+def send_approval_email(sender, instance, **kwargs):
+     
+     if instance.job_approval_email_sent:
+          return
+     if instance.is_job_approved and not instance.job_approval_email_sent:
+            instance.job_approval_email_sent = True
+            instance.save()
+            email_subject = 'Job Approval'
+            email_message = f"""
+            Dear, {instance.company.recruiter_details.name},<br></br> 
+            <p><strong>Congratulations! </strong>Your Job ({instance.title}) post has been Accepted</p>
+            <h3 style='margin-top:'1em''>Best Regards, </h3>
+            <p style='margin-top:'0.2em''>The HireGurkha Team</p>
+            <a href="https://hiregurkha.com">HireGrukha.com </a>
+
+            """
+            try:
+                           
+                connection = mail.get_connection()
+                connection.open()
+                                
+                email = EmailMessage(email_subject, email_message, 'hiregurkhaofficial@gmail.com', [instance.company.user.email])
+                email.content_subtype = "html"
+                email.send()
+            except Exception as e:
+                raise Http404
+            return
+            
+          
