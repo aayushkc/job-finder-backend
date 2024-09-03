@@ -19,6 +19,7 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_recriuter = models.BooleanField(default=False)
     is_seeker = models.BooleanField(default = False)
+    phone_number = PhoneNumberField(blank=True)
     objects = MyUserManager()
 
     USERNAME_FIELD = "email"  #this filed (email) is used when loggin in

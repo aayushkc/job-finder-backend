@@ -9,14 +9,19 @@ from .views import (RegisterUser, RecruiterLeadDetailsView,
                     EducationLevelInfoView,
                     PageMetaCreateView,PageMetaUpdateView,PageMetaView,
                     EventsCompletedView,EventsUpcomingView,EventsCreateView,EventsUpdateView,EventsDeleteView,
-                    GetAllSkillsWithJob, GetAllPrefferedJobssWithJob
+                    GetAllSkillsWithJob, GetAllPrefferedJobssWithJob,
+                    ActivateUserAccount, GetUserDetails, ResendAccountActivationLink, ResendAccountActivationLinkUsingUserId
                     )
 
 
 
 urlpatterns = [
     path('auth/register/<str:user_type>', view=RegisterUser.as_view(), name='register-user'),
-    
+    path('activate/<uidb64>/<token>', ActivateUserAccount.as_view(), name='activate'),
+    path('resend-activate-link/<uidb64>/', ResendAccountActivationLink.as_view(), name='resend-activate-link'),
+    path('resend-activate-link-using-user/<int:id>/', ResendAccountActivationLinkUsingUserId.as_view(), name='resend-activate-linki-wth-user-id'),
+    path('get-user-details/<int:pk>', GetUserDetails.as_view(), name='get-user-details'),
+
     path('generate-recruiter-lead', view=RecruiterLeadDetailsView.as_view(), name='recruiter-lead'),
 
     path('list-generated-lead', view=GeneratedLeadStatusView.as_view(), name='list-recruiter-lead'),
@@ -40,4 +45,6 @@ urlpatterns = [
 
     path('all-skills-with-job', GetAllSkillsWithJob.as_view(), name='all-skills-with-job'),
     path('all-prefferedjob-with-job', GetAllPrefferedJobssWithJob.as_view(), name='all-preffered-with-job'),
+
+    
 ] 

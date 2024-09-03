@@ -27,9 +27,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         style={'input_type': 'password'}
     )
 
+    phone_number = PhoneNumberField(required=False)
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'confirm_password')
+        fields = ('username', 'email', 'password', 'confirm_password', 'phone_number')
 
     def validate(self, attrs):
         # here check password is strong or what! 
@@ -57,6 +59,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         self.create_sub_user(user)
         return user
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", 'email', "is_verified")
 
 class SkillsSerializer(serializers.ModelSerializer):
     class Meta:

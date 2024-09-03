@@ -2,14 +2,19 @@ from django.contrib.auth import get_user_model
 from django.dispatch import Signal
 from django.http.response import Http404
 from django.core import mail
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.db.models import Case, When, BooleanField
 from django.db.models.functions import Now
 from django.db import connection
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes,force_str
+from django.contrib.sites.shortcuts import get_current_site
 
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+from rest_framework.views import APIView
 from rest_framework.exceptions import NotAcceptable, ValidationError
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -17,7 +22,7 @@ from .serializers import (UserRegistrationSerializer, SkillsSerializer,
                           RecruiterLeadDetailsSerializer, GeneratedLeadStatusSerializer, 
                           IndustrySerializer, PrefferedJobSerializer,
                           EducationLevelInfoSerializer,PageMetaSerializer,
-                          EventsSerializer
+                          EventsSerializer,UserSerializer
                           )
 from .models import (GeneratedLeadStatus, 
                     Skills,
@@ -30,6 +35,7 @@ from .permissions import IsUserRecruiter
 from recruiter.customPagination import CustomPagination
 User = get_user_model()
 user_created = Signal()
+token_generator = PasswordResetTokenGenerator()
 # Create your views here.
 
 def my_custom_sql(table_name, field_name):
@@ -56,7 +62,106 @@ class RegisterUser(CreateAPIView):
             user = serializer.save(is_seeker=True)
         else:
             raise NotAcceptable
-        
+        token = token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        current_site = get_current_site(self.request).domain
+        reset_link = f"http://localhost:3000/activate/{uid}/{token}"
+        email_subject="HireGrukha Account Activation"
+        email_message = f"Please activate your account by clicking the link below.<br></br> {reset_link}"
+        try:
+                           
+            connection = mail.get_connection()
+            connection.open()
+                            
+            email = EmailMessage(email_subject, email_message, 'hiregurkhaofficial@gmail.com', [user.email])
+            email.content_subtype = "html"
+            email.send()
+        except Exception as e:
+            raise Http404
+
+class ActivateUserAccount(APIView):
+     def get_user_from_email_verification_token(self,uidb64, token):
+    
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError,get_user_model().DoesNotExist):
+            return None
+        if user is not None and token_generator.check_token(user, token):
+            return user
+
+        return None
+
+     def get(self, request, uidb64, token):
+        user = self.get_user_from_email_verification_token(uidb64, token)
+        if user:
+             if user.is_verified:
+                 return Response(data={"User Already Verified"}, status=status.HTTP_208_ALREADY_REPORTED)
+             user.is_verified = True
+             user.save()
+             return Response(data={"User Verification Successfull"}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={"User Verification UnSuccessfull"}, status=status.HTTP_400_BAD_REQUEST)
+       
+class ResendAccountActivationLink(APIView):
+    def get(self,request,uidb64):
+        print(uidb64)
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            print("User id",uid)
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError,get_user_model().DoesNotExist):
+            user = None
+        if user:
+            print("Entereeed")
+            token = token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            current_site = get_current_site(self.request).domain
+            reset_link = f"http://localhost:3000/activate/{uid}/{token}"
+            email_subject="HireGrukha Account Activation"
+            email_message = f"Please activate your account by clicking the link below.<br></br> {reset_link}"
+            try:
+                            
+                connection = mail.get_connection()
+                connection.open()      
+                email = EmailMessage(email_subject, email_message, 'hiregurkhaofficial@gmail.com', [user.email])
+                email.content_subtype = "html"
+                email.send()
+                return Response(data={"Email sent Successfully"}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(data={"Mail sending error"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(data={"User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class ResendAccountActivationLinkUsingUserId(APIView):
+    def get(self,request,id):
+        try:
+            user = User.objects.get(pk=id)
+        except (TypeError, ValueError, OverflowError,get_user_model().DoesNotExist):
+            user = None
+        if user:
+            print("Entereeed")
+            token = token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = f"http://localhost:3000/activate/{uid}/{token}"
+            email_subject="HireGrukha Account Activation"
+            email_message = f"Please activate your account by clicking the link below.<br></br> {reset_link}"
+            try:
+                            
+                connection = mail.get_connection()
+                connection.open()      
+                email = EmailMessage(email_subject, email_message, 'hiregurkhaofficial@gmail.com', [user.email])
+                email.content_subtype = "html"
+                email.send()
+                return Response(data={"Email sent Successfully"}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(data={"Mail sending error"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(data={"User not found"}, status=status.HTTP_404_NOT_FOUND)
+   
+class GetUserDetails(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 class SkillSetCreateView(CreateAPIView):
     permission_classes = [IsAdminUser]
     queryset = Skills.objects.all()
@@ -119,17 +224,6 @@ class RecruiterLeadDetailsView(CreateAPIView):
                 fail_silently=True
                 )
             print(mail_status)
-            # msg = EmailMultiAlternatives(
-            #                 # title:
-            #                 email_subject,
-            #                 # message:
-            #                 email_message,
-            #                 # from:
-            #                 "noreply@hiregurkha.com",
-            #                 # to:
-            #                  [self.request.data['email']]
-            #                 )
-            # msg.send()
             serializer.save()
         except Exception as e:
             raise Http404

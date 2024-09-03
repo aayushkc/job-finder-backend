@@ -124,5 +124,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["isRecruiter"] = user.is_recriuter
         token["isSeeker"] = user.is_seeker
         token['isSuperAdmin'] = user.is_admin
-
+        token['hasUserBeenActivated'] = user.is_verified
         return token

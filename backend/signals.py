@@ -78,19 +78,6 @@ def user_created(sender, instance, **kwargs):
                                 [user.email],  
                                 fail_silently=False
                             )
-
-                            # msg = EmailMultiAlternatives(
-                            # # title:
-                            # "Password Reset for {title}".format(title="Hire Gurkha"),
-                            # # message:
-                            # email_message,
-                            # # from:
-                            # "noreply@hiregurkha.com",
-                            # # to:
-                            #  [user.email]
-                            # )
-                            # msg.send()
-
                             return True  # Indicate successful email sending
                     except:
                          raise EmailSendingError
