@@ -1,5 +1,5 @@
 """
-WSGI config for hire_gurkha_backend project.
+WSGI config for job_finder_backend project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hire_gurkha_backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'job_finder_backend.settings')
 
 application = get_wsgi_application()

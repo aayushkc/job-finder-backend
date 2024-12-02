@@ -1,5 +1,5 @@
 """
-ASGI config for hire_gurkha_backend project.
+ASGI config for job_finder_backend project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hire_gurkha_backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'job_finder_backend.settings')
 
 application = get_asgi_application()
